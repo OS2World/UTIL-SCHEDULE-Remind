@@ -1,0 +1,1479 @@
+diff -c remind-3.0.10/config.h new/config.h
+*** remind-3.0.10/config.h	Wed Oct 13 07:47:46 1993
+--- new/config.h	Sun Oct 31 20:46:00 1993
+***************
+*** 169,179 ****
+  /*---------------------------------------------------------------------*/
+  /* Do we handle queued reminders?                                      */
+  /*---------------------------------------------------------------------*/
+! #ifdef UNIX
+! #define HAVE_QUEUED 1
+! #endif
+! 
+! #if defined(__BORLANDC__) && defined(__OS2__)
+  #define HAVE_QUEUED 1
+  #endif
+  
+--- 169,175 ----
+  /*---------------------------------------------------------------------*/
+  /* Do we handle queued reminders?                                      */
+  /*---------------------------------------------------------------------*/
+! #if defined(UNIX) || defined(__OS2__)
+  #define HAVE_QUEUED 1
+  #endif
+  
+diff -c remind-3.0.10/dorem.c new/dorem.c
+*** remind-3.0.10/dorem.c	Wed Oct 20 09:14:48 1993
+--- new/dorem.c	Sun Oct 31 20:45:50 1993
+***************
+*** 88,95 ****
+  
+  
+     if (ShouldTriggerReminder(&trig, &tim, jul)) {
+!       if ( (r=TriggerReminder(p, &trig, &tim, jul)) ) return r;
+     }
+  
+     return OK;
+  }   
+--- 88,97 ----
+  
+  
+     if (ShouldTriggerReminder(&trig, &tim, jul)) {
+!       if ( (r=TriggerReminder(p, &trig, &tim, jul, 0)) ) {
+! 	 return r;
+     }
++    }
+  
+     return OK;
+  }   
+***************
+*** 445,457 ****
+  /*                                                             */
+  /***************************************************************/
+  #ifdef HAVE_PROTOS
+! PUBLIC int TriggerReminder(ParsePtr p, Trigger *t, TimeTrig *tim, int jul)
+  #else
+! int TriggerReminder(p, t, tim, jul)
+  ParsePtr p;
+  Trigger *t;
+  TimeTrig *tim;
+  int jul;
+  #endif
+  {
+     int r, y, m, d;
+--- 447,461 ----
+  /*                                                             */
+  /***************************************************************/
+  #ifdef HAVE_PROTOS
+! PUBLIC int TriggerReminder(ParsePtr p, Trigger *t, TimeTrig *tim, int jul,
+! 			   int AsPopUp)
+  #else
+! int TriggerReminder(p, t, tim, jul, AsPopUp)
+  ParsePtr p;
+  Trigger *t;
+  TimeTrig *tim;
+  int jul;
++ int AsPopUp
+  #endif
+  {
+     int r, y, m, d;
+***************
+*** 468,475 ****
+     if ((t->typ == MSG_TYPE || t->typ == MSF_TYPE) 
+         && !NumTriggered && !NextMode && !MsgCommand) {
+        if (!DoSubstFromString(Banner, SubstBuffer, JulianToday, NO_TIME) && *SubstBuffer)
+! #ifdef __OS2__
+              PutlPopUp(SubstBuffer);
+  #else
+  	    printf("%s\n", SubstBuffer);
+  #endif
+--- 472,482 ----
+     if ((t->typ == MSG_TYPE || t->typ == MSF_TYPE) 
+         && !NumTriggered && !NextMode && !MsgCommand) {
+        if (!DoSubstFromString(Banner, SubstBuffer, JulianToday, NO_TIME) && *SubstBuffer)
+! #ifdef OS2_POPUP
+! 	    if (AsPopUp)
+              PutlPopUp(SubstBuffer);
++ 	    else
++ 	       printf("%s\n", SubstBuffer);
+  #else
+  	    printf("%s\n", SubstBuffer);
+  #endif
+***************
+*** 481,492 ****
+        if ( (r=DoSubst(p, SubstBuffer, t, tim, jul, CAL_MODE)) ) return r;
+        if (!*SubstBuffer) return OK;
+        FromJulian(jul, &y, &m, &d);
+! #ifdef __OS2__
+        sprintf(buf, "%04d%c%02d%c%02d %s", y, DATESEP, m+1, DATESEP, d,
+  					SimpleTime(tim->ttime, NULL));
+        StartPopUp();
+        PutsPopUp(buf);
+        PutlPopUp(SubstBuffer);
+  #else
+        printf("%04d%c%02d%c%02d %s%s\n", y, DATESEP, m+1, DATESEP, d,
+                                        SimpleTime(tim->ttime, NULL),
+--- 488,505 ----
+        if ( (r=DoSubst(p, SubstBuffer, t, tim, jul, CAL_MODE)) ) return r;
+        if (!*SubstBuffer) return OK;
+        FromJulian(jul, &y, &m, &d);
+! #ifdef OS2_POPUP
+!       if (AsPopUp) {
+        sprintf(buf, "%04d%c%02d%c%02d %s", y, DATESEP, m+1, DATESEP, d,
+  					SimpleTime(tim->ttime, NULL));
+        StartPopUp();
+        PutsPopUp(buf);
+        PutlPopUp(SubstBuffer);
++ 	  }
++       else
++ 	  printf("%04d%c%02d%c%02d %s%s\n", y, DATESEP, m+1, DATESEP, d,
++ 					  SimpleTime(tim->ttime, NULL),
++ 					  SubstBuffer);
+  #else
+        printf("%04d%c%02d%c%02d %s%s\n", y, DATESEP, m+1, DATESEP, d,
+                                        SimpleTime(tim->ttime, NULL),
+***************
+*** 524,533 ****
+  	 DestroyValue(&v);
+        }
+     }
+! #ifndef __OS2__
+     if (t->typ == MSG_TYPE || t->typ == MSF_TYPE) {
+  #else
+!    if (t->typ == MSF_TYPE) {
+  #endif
+        *s2++ = '\n';
+     }
+--- 537,550 ----
+  	 DestroyValue(&v);
+        }
+     }
+! #if 0
+! #ifdef OS2_POPUP
+!    if (t->typ == MSF_TYPE) {
+! #else
+     if (t->typ == MSG_TYPE || t->typ == MSF_TYPE) {
++ #endif
+  #else
+!    if (t->typ == MSG_TYPE || t->typ == MSF_TYPE) {
+  #endif
+        *s2++ = '\n';
+     }
+***************
+*** 549,556 ****
+              sprintf(SubstBuffer, MsgCommand, buf);
+  	    system(SubstBuffer);
+           } else {
+! #ifdef __OS2__
+              PutlPopUp(buf);
+  #else
+              printf("%s", buf);
+  #endif
+--- 566,576 ----
+              sprintf(SubstBuffer, MsgCommand, buf);
+  	    system(SubstBuffer);
+           } else {
+! #ifdef OS2_POPUP
+! 	    if (AsPopUp)
+              PutlPopUp(buf);
++ 	    else
++ 	       printf("%s", buf);
+  #else
+              printf("%s", buf);
+  #endif
+***************
+*** 558,569 ****
+  	 break;
+  
+        case MSF_TYPE:
+! #ifdef __OS2__
+           StartPopUp();
+! #endif
+!          FillParagraph(buf);
+! #ifdef __OS2__
+           EndPopUp();
+  #endif
+  	 break;
+  
+--- 578,593 ----
+  	 break;
+  
+        case MSF_TYPE:
+! #ifdef OS2_POPUP
+! 	 if (AsPopUp) {
+           StartPopUp();
+! 	     FillParagraph(buf, 1);
+           EndPopUp();
++ 	 }else{
++ 	     FillParagraph(buf, 0);
++ 	 }
++ #else
++ 	 FillParagraph(buf, 0);
+  #endif
+  	 break;
+  
+diff -c remind-3.0.10/files.c new/files.c
+*** remind-3.0.10/files.c	Wed Oct 13 07:38:24 1993
+--- new/files.c	Sun Oct 31 20:45:52 1993
+***************
+*** 25,31 ****
+  #include <sys/stat.h>
+  #include <time.h>
+  
+! #if defined(__MSDOS__) || defined(OS2)
+  #include <io.h>
+  #endif
+  
+--- 25,31 ----
+  #include <sys/stat.h>
+  #include <time.h>
+  
+! #if defined(__MSDOS__)
+  #include <io.h>
+  #endif
+  
+***************
+*** 444,450 ****
+  /*  file.  Not needed for UNIX.                                */
+  /*                                                             */
+  /***************************************************************/
+! #if defined(__MSDOS__) || defined(OS2)
+  /*
+   * WARNING WARNING WARNING WARNING
+   * In the version of Turbo C which I have, there is a bug in the
+--- 444,450 ----
+  /*  file.  Not needed for UNIX.                                */
+  /*                                                             */
+  /***************************************************************/
+! #if defined(__MSDOS__)
+  /*
+   * WARNING WARNING WARNING WARNING
+   * In the version of Turbo C which I have, there is a bug in the
+diff -c remind-3.0.10/funcs.c new/funcs.c
+*** remind-3.0.10/funcs.c	Fri Oct 15 09:34:34 1993
+--- new/funcs.c	Fri Nov 05 18:43:04 1993
+***************
+*** 30,36 ****
+  #include <sys/types.h>
+  #include <sys/stat.h>
+  #include <time.h>
+! #if defined(__MSDOS__) || defined(OS2)
+  #include <io.h>
+  #define R_OK 4
+  #define W_OK 2
+--- 30,36 ----
+  #include <sys/types.h>
+  #include <sys/stat.h>
+  #include <time.h>
+! #if defined(__MSDOS__) || defined(__OS2__)
+  #include <io.h>
+  #define R_OK 4
+  #define W_OK 2
+***************
+*** 118,126 ****
+  PRIVATE int	CleanUpAfterFunc ARGS ((void));
+  PRIVATE int	SunStuff	ARGS ((int rise, double cosz, int jul));
+  
+! #if defined(__MSDOS__) || defined(OS2)
+! PRIVATE FILE *popen  ARGS((char *cmd, char *mode));
+! PRIVATE int   pclose ARGS((FILE *fp));
+  #endif
+  
+  /* "Overload" the struct Operator definition */
+--- 118,138 ----
+  PRIVATE int	CleanUpAfterFunc ARGS ((void));
+  PRIVATE int	SunStuff	ARGS ((int rise, double cosz, int jul));
+  
+! #if defined(__MSDOS__) || defined(__BORLANDC__)
+! PRIVATE FILE *os_popen  ARGS((char *cmd, char *mode));
+! PRIVATE int   os_pclose ARGS((FILE *fp));
+! #define POPEN os_popen
+! #define PCLOSE os_pclose
+! #if defined(_MSC_VER)
+! #define popen _popen
+! #define pclose _pclose
+! #endif
+! #elif defined(_MSC_VER)
+! #define POPEN _popen
+! #define PCLOSE _pclose
+! #else
+! #define POPEN popen
+! #define PCLOSE pclose
+  #endif
+  
+  /* "Overload" the struct Operator definition */
+***************
+*** 930,941 ****
+  #ifdef UNIX
+     return RetStrVal("UNIX");
+  #else
+- #ifdef __MSC__
+- 	if (_osmode == OS2_MODE)
+- 		return RetStrVal("OS/2");
+- #endif
+  #ifdef __OS2__
+!    return RetStrVal("OS/2");
+  #else
+     return RetStrVal("MSDOS");
+  #endif
+--- 942,949 ----
+  #ifdef UNIX
+     return RetStrVal("UNIX");
+  #else
+  #ifdef __OS2__
+!    return RetStrVal(OS2MODE ? "OS/2" : "MSDOS");
+  #else
+     return RetStrVal("MSDOS");
+  #endif
+***************
+*** 1248,1254 ****
+     if (ARG(0).type != STR_TYPE) return E_BAD_TYPE;
+     s = buf;
+     len = 0;
+!    fp = popen(ARG(0).v.str, "r");
+     if (!fp) return E_IO_ERR;
+     while (len < SHELLSIZE) {
+        ch = getc(fp);
+--- 1256,1262 ----
+     if (ARG(0).type != STR_TYPE) return E_BAD_TYPE;
+     s = buf;
+     len = 0;
+!    fp = POPEN(ARG(0).v.str, "r");
+     if (!fp) return E_IO_ERR;
+     while (len < SHELLSIZE) {
+        ch = getc(fp);
+***************
+*** 1263,1272 ****
+  
+     /* Delete trailing newline (converted to space) */
+     if (s > buf && *(s-1) == ' ') *(s-1) = 0;
+! #if defined(__MSDOS__) || defined(OS2)
+     if (s-1 > buf && *(s-2) == ' ') *(s-2) = 0;
+  #endif
+!    pclose(fp);
+     return RetStrVal(buf);
+  }
+  
+--- 1271,1280 ----
+  
+     /* Delete trailing newline (converted to space) */
+     if (s > buf && *(s-1) == ' ') *(s-1) = 0;
+! #if defined(__MSDOS__) || defined(__OS2__)
+     if (s-1 > buf && *(s-2) == ' ') *(s-2) = 0;
+  #endif
+!    PCLOSE(fp);
+     return RetStrVal(buf);
+  }
+  
+***************
+*** 1438,1454 ****
+     char TmpBuf[LINELEN];  /* Should be _POSIX_PATH_MAX ? */
+     char *s;
+  
+- #if defined(__MSDOS__) || defined(OS2)
+- #define PATHSEP '\\'
+- #else
+- #define PATHSEP '/'
+- #endif
+- 
+     strcpy(TmpBuf, FileName);
+     s = TmpBuf + strlen(TmpBuf) - 1;
+     if (s < TmpBuf) return RetStrVal(".");
+!    while (s > TmpBuf && *s != PATHSEP) s--;
+!    if (*s == PATHSEP) {
+           *s = 0;
+  	 return RetStrVal(TmpBuf);
+     } else return RetStrVal(".");
+--- 1446,1463 ----
+     char TmpBuf[LINELEN];  /* Should be _POSIX_PATH_MAX ? */
+     char *s;
+  
+     strcpy(TmpBuf, FileName);
+     s = TmpBuf + strlen(TmpBuf) - 1;
+     if (s < TmpBuf) return RetStrVal(".");
+! #if defined(__OS2__) || defined(__MSDOS__)
+!    /* Both '\\' and '/' can be part of path; handle drive letters. */
+!    while (s > TmpBuf && !strchr("\\/:", *s)) s--;
+!    if (*s == ':') { s[1] = '.'; s += 2; }
+!    if (s > TmpBuf) *s = '/';
+! #else
+!    while (s > TmpBuf && *s != '/') s--;
+! #endif
+!    if (*s == '/') {
+           *s = 0;
+  	 return RetStrVal(TmpBuf);
+     } else return RetStrVal(".");
+***************
+*** 1492,1498 ****
+     return OK;
+  }
+  
+! #if defined(__MSDOS__) || defined(OS2)
+  /***************************************************************/
+  /*                                                             */
+  /*  popen and pclose                                           */
+--- 1501,1507 ----
+     return OK;
+  }
+  
+! #if defined(__MSDOS__) || defined(__BORLANDC__)
+  /***************************************************************/
+  /*                                                             */
+  /*  popen and pclose                                           */
+***************
+*** 1509,1522 ****
+  
+  static char *TmpFile;
+  #ifdef HAVE_PROTOS
+! PRIVATE FILE *popen(char *cmd, char *mode)
+  #else
+! static FILE *popen(cmd, mode)
+  char *cmd, *mode;
+  #endif
+  {
+     char *s;
+  
+     TmpFile = tmpnam(NULL);
+     if (!TmpFile) return NULL;
+     s = (char *) malloc(strlen(cmd) + 3 + strlen(TmpFile) + 1);
+--- 1518,1536 ----
+  
+  static char *TmpFile;
+  #ifdef HAVE_PROTOS
+! PRIVATE FILE *os_popen(char *cmd, char *mode)
+  #else
+! static FILE *os_popen(cmd, mode)
+  char *cmd, *mode;
+  #endif
+  {
+     char *s;
+  
++ #if defined(__OS2__) && !defined(__BORLANDC__)
++    if (OS2MODE)
++      return(popen(cmd, mode));
++ #endif
++ 
+     TmpFile = tmpnam(NULL);
+     if (!TmpFile) return NULL;
+     s = (char *) malloc(strlen(cmd) + 3 + strlen(TmpFile) + 1);
+***************
+*** 1530,1541 ****
+  }
+  
+  #ifdef HAVE_PROTOS
+! PRIVATE int pclose(FILE *fp)
+  #else
+! static int pclose(fp)
+  FILE *fp;
+  #endif
+  {
+     unlink(TmpFile);
+     return fclose(fp);
+  }
+--- 1544,1560 ----
+  }
+  
+  #ifdef HAVE_PROTOS
+! PRIVATE int os_pclose(FILE *fp)
+  #else
+! static int os_pclose(fp)
+  FILE *fp;
+  #endif
+  {
++ #if defined(__OS2__) && !defined(__BORLANDC__)
++   if (OS2MODE)
++     return(pclose(fp));
++ #endif
++ 
+     unlink(TmpFile);
+     return fclose(fp);
+  }
+diff -c remind-3.0.10/globals.h new/globals.h
+*** remind-3.0.10/globals.h	Tue Oct 12 13:22:42 1993
+--- new/globals.h	Sun Oct 31 20:46:00 1993
+***************
+*** 141,143 ****
+--- 141,154 ----
+    }
+  #endif
+  ;
++ 
++ #if defined(__OS2__)
++ #if defined(_MSC_VER) || defined(__EMX__)
++ #define OS2MODE (_osmode == OS2_MODE)
++ #define DOSMODE (_osmode == DOS_MODE)
++ #else
++ #define OS2MODE 1
++ #define DOSMODE 0
++ #endif
++ #endif
++ 
+diff -c remind-3.0.10/init.c new/init.c
+*** remind-3.0.10/init.c	Tue Oct 12 13:22:44 1993
+--- new/init.c	Sun Oct 31 20:45:54 1993
+***************
+*** 128,133 ****
+--- 128,138 ----
+     NumQueued = 0;
+     DontIssueAts = 0;
+     Daemon = 0;
++ #elif defined(_MSC_VER) || defined(__BORLANDC__)
++    DontFork = 1;
++ #elif defined(__OS2__) && defined (__MSDOS__)
++    if (DOSMODE)
++      DontFork = 1;
+  #endif
+  
+     /* Parse the command-line options */
+diff -c remind-3.0.10/main.c new/main.c
+*** remind-3.0.10/main.c	Thu Oct 14 08:27:42 1993
+--- new/main.c	Sun Oct 31 20:45:56 1993
+***************
+*** 20,25 ****
+--- 20,26 ----
+  #include <unistd.h>
+  #endif
+  #include <stdio.h>
++ #include <signal.h>
+  #include <string.h>
+  #ifdef HAVE_STDARG
+  #include <stdarg.h>
+***************
+*** 55,67 ****
+  static char TPushBuffer[TOKSIZE+1]; /* Buffer for pushing back a token. */
+  static char *TokenPushed = NULL;
+  
+! #ifdef __OS2__
+! #ifdef putchar
+! #undef putchar
+! #endif
+! #define putchar(c) PutcPopUp(c)
+  #endif
+  
+  /***************************************************************/
+  /***************************************************************/
+  /**                                                           **/
+--- 56,68 ----
+  static char TPushBuffer[TOKSIZE+1]; /* Buffer for pushing back a token. */
+  static char *TokenPushed = NULL;
+  
+! #ifdef OS2_POPUP
+! #define Putchar(c) {if (AsPopUp) PutcPopUp(c); else putchar(c);}
+! #else
+! #define Putchar(c) putchar(c)
+  #endif
+  
++ 
+  /***************************************************************/
+  /***************************************************************/
+  /**                                                           **/
+***************
+*** 118,125 ****
+  #endif
+        }
+  
+!    /* If it's MS-DOS or OS2, reset the file access date */
+! #if defined(__MSDOS__) || defined(OS2)
+        if (!UseStdin && (RealToday == JulianToday))
+           SetAccessDate(InitialFile, RealToday);
+  #endif
+--- 119,128 ----
+  #endif
+        }
+  
+!    /* If it's MS-DOS, reset the file access date.           */
+!    /* Note that OS/2 and DOS bound programs have __MSDOS__  */
+!    /* defined, so this test should probably be modified.    */
+! #if defined(__MSDOS__)
+        if (!UseStdin && (RealToday == JulianToday))
+           SetAccessDate(InitialFile, RealToday);
+  #endif
+***************
+*** 1246,1255 ****
+  #define ISBLANK(c) (isspace(c) && (c) != '\n')
+  
+  #ifdef HAVE_PROTOS
+! PUBLIC void FillParagraph(char *s)
+  #else
+! void FillParagraph(s)
+  char *s;
+  #endif
+  {
+  
+--- 1249,1259 ----
+  #define ISBLANK(c) (isspace(c) && (c) != '\n')
+  
+  #ifdef HAVE_PROTOS
+! PUBLIC void FillParagraph(char *s, int AsPopUp)
+  #else
+! void FillParagraph(s, AsPopUp)
+  char *s;
++ int AsPopUp;
+  #endif
+  {
+  
+***************
+*** 1272,1278 ****
+  
+        /* If it's a carriage return, output it and start new paragraph */
+        if (*s == '\n') {
+!          putchar('\n');
+  	 s++;
+  	 line = 0;
+  	 while(ISBLANK(*s)) s++;
+--- 1276,1282 ----
+  
+        /* If it's a carriage return, output it and start new paragraph */
+        if (*s == '\n') {
+! 	 Putchar('\n');
+  	 s++;
+  	 line = 0;
+  	 while(ISBLANK(*s)) s++;
+***************
+*** 1284,1290 ****
+        /* Over here, we're at the beginning of a line.  Emit the correct
+           number of spaces */
+        j = line ? SubsIndent : FirstIndent;
+!       for (i=0; i<j; i++) putchar(' ');
+  
+        /* Calculate the amount of room left on this line */
+        roomleft = FormWidth - j;
+--- 1288,1296 ----
+        /* Over here, we're at the beginning of a line.  Emit the correct
+           number of spaces */
+        j = line ? SubsIndent : FirstIndent;
+!       for (i=0; i<j; i++) {
+! 	  Putchar(' ');
+! 	    }
+  
+        /* Calculate the amount of room left on this line */
+        roomleft = FormWidth - j;
+***************
+*** 1301,1309 ****
+  	    return;
+           }
+  	 if (!pendspace || len+pendspace <= roomleft) {
+!             for (i=0; i<pendspace; i++) putchar(' ');
+     	    while(t < s) {
+! 	       putchar(*t);
+  	       if (strchr(EndSent, *t)) doublespace = 2;
+  	       else if (!strchr(EndSentIg, *t)) doublespace = 1;
+  	       t++;
+--- 1307,1317 ----
+  	    return;
+           }
+  	 if (!pendspace || len+pendspace <= roomleft) {
+! 	    for (i=0; i<pendspace; i++) {
+! 	       Putchar(' ');
+! 	    }
+     	    while(t < s) {
+! 	       Putchar(*t);
+  	       if (strchr(EndSent, *t)) doublespace = 2;
+  	       else if (!strchr(EndSentIg, *t)) doublespace = 1;
+  	       t++;
+***************
+*** 1310,1316 ****
+              }
+           } else {
+  	    s = t;
+! 	    putchar('\n');
+  	    line++;
+  	    break;
+           }
+--- 1318,1324 ----
+              }
+           } else {
+  	    s = t;
+! 	    Putchar('\n');
+  	    line++;
+  	    break;
+           }
+***************
+*** 1459,1461 ****
+--- 1467,1506 ----
+     *locdate = utcdate;
+     *loctime = utctime;
+  }
++ 
++ /***************************************************************/
++ /*							       */
++ /* SigIntHandler					       */
++ /*							       */
++ /* For debugging purposes, when sent a SIGINT, we print the    */
++ /* contents of the queue.  This does NOT work when the -f      */
++ /* command-line flag is supplied.			       */
++ /*							       */
++ /* For OS/2, this has to be in the main thread. 	       */
++ /*							       */
++ /***************************************************************/
++ #ifdef __BORLANDC__
++ void __cdecl SigIntHandler(int d)
++ #else
++ #ifdef HAVE_PROTOS
++ void SigIntHandler(void)
++ #else
++ void SigIntHandler()
++ #endif
++ #endif
++ {
++ #ifdef SYSV
++    signal(SIGINT, SigIntHandler);
++ #else
++ #ifdef __BORLANDC__
++    signal(SIGINT, SIG_DFL);
++ #else
++ #ifdef __OS2__
++    signal(SIGINT, SIG_ACK);
++ #endif
++ #endif
++ #endif
++    GotSigInt();
++    exit(0);
++ }
++ 
+diff -c remind-3.0.10/makefile.bcc new/makefile.bcc
+*** remind-3.0.10/makefile.bcc	Wed Oct 13 08:21:02 1993
+--- new/makefile.bcc	Sun Oct 31 20:45:48 1993
+***************
+*** 5,11 ****
+  MODEL=l
+  
+  !if $d(__OS2__)
+! CFLAGS= -DOS2 -w-pia -O2
+  BINDIR= ..\OS2-EX
+  DELFLAG= /f
+  !else
+--- 5,11 ----
+  MODEL=l
+  
+  !if $d(__OS2__)
+! CFLAGS= -DOS2_POPUP -w-pia -O2
+  BINDIR= ..\OS2-EX
+  DELFLAG= /f
+  !else
+diff -c remind-3.0.10/makefile.os2 new/makefile.os2
+*** remind-3.0.10/makefile.os2	Tue Oct 12 13:28:52 1993
+--- new/makefile.os2	Sun Oct 31 20:45:50 1993
+***************
+*** 1,41 ****
+! # Makefile for REMIND for Microsoft C 6.00A for OS/2 and MSDOS
+! # This copy was modified from the original to permit creation of 
+! #   remind.exe   OS/2 1.x--2.0 executable
+! #   remindb.exe  OS/2 and MSDOS bound executable
+  #
+! # Darrel Hankerson hank@ducvax.auburn.edu
+! # 11 November 1992
+  
+! O = .obj
+! 
+! CC= cl
+! 
+! # Put any additional flags for the C compiler here
+! MODEL = S
+! DEFINES= -D__MSDOS__ -D__MSC__ -D__STDC__ -DOS2
+! CFLAGS= -A$(MODEL) $(DEFINES)
+! 
+! LINK = cl
+! LFLAGS = -A$(MODEL) -Lp
+! BIND = bind
+! 
+! all: remind.exe remindb.exe rem2ps.exe
+  
+! #-----------------------------------------------------------------------------
+! # YOU SHOULDN'T EDIT ANYTHING BELOW HERE.  You may want to change some things
+! # in config.h; then, you should be able to type 'make'.
+! #-----------------------------------------------------------------------------
+! VERSION= 03.00.10
+  
+  HDRS= config.h err.h expr.h globals.h protos.h types.h version.h \
+! lang.h english.h german.h dutch.h finish.h french.h norwgian.h
+  
+  STDHDRS= config.h types.h protos.h globals.h err.h lang.h
+  
+  LANGHDRS= english.h german.h dutch.h finnish.h french.h norwgian.h
+  
+! SRCS= calendar.c dorem.c dosubst.c expr.c files.c funcs.c globals.c init.c \
+! main.c moon.c omit.c sort.c token.c trigger.c userfns.c utils.c var.c hbcal.c
+  
+  MANIFEST= README.UNIX README.DOS COPYRIGHT $(HDRS) $(SRCS) Makefile rem rem.1 \
+  remind.1 remind-all.csh remind-all.sh test.rem test-rem test.cmp makefile.tc \
+--- 1,57 ----
+! # Makefile for REMIND
+  #
+! # - for GNU gcc (emx 0.8g kit) [executables for OS/2 2.x or DOS (32-bit)]
+! # - for Microsoft C 6.00A      [executables for OS/2 or MSDOS (16-bit)]
+  
+! # To use, enter "make -f Makefile.os2" (this makefile depends on its
+! # name being "Makefile.os2").
+! #
+! # Tested with dmake 3.8 and GNU make 3.68 under OS/2
+  
+! default:
+! 	@echo "Enter $(MAKE) -f Makefile.os2 target                     "
+! 	@echo " where 'target' is chosen from                          " 
+! 	@echo "   msc      OS/2 exe [Microsoft C 6.00a]                "
+! 	@echo "   mscbnd   OS/2 and DOS exe [Microsoft C 6.00a]        "
+! 	@echo "   emx      OS/2 and DOS 32-bit exe [EMX/gcc]           "
+! 
+! 
+! msc: 
+! 	$(MAKE) -f Makefile.os2 all \
+! 	CC="cl -nologo -AM" O=".obj" \
+! 	CFLAGS="-D__STDC__ -D__OS2__" \
+! 	LFLAGS="-Lp" \
+! 	LFLAGS2="setargv.obj remind.def -link /NOE"
+! 
+! mscbnd: 
+! 	$(MAKE) -f Makefile.os2 all \
+! 	CC="cl -nologo -AM" O=".obj" \
+! 	CFLAGS="-D__STDC__ -D__OS2__ -D__MSDOS__" \
+! 	LFLAGS="-Lp" LBIND="-Fb" \
+! 	LFLAGS2="setargv.obj remind.def -link /NOE" \
+! 	BIND="bind remind /n DOSMAKEPIPE DOSCWAIT VIOENDPOPUP VIOPOPUP"
+! 
+! emx:  
+! 	$(MAKE) -f Makefile.os2 all \
+! 	CC="gcc -O -s" O=".o" \
+! 	CFLAGS="-D__OS2__ -D__MSDOS__" \
+! 	LFLAGS=""
+! 
+! 
+! # OS2_POPUP enables Russ Herman's popup reminders
+! #OS2_POPUP =
+! OS2_POPUP = -DOS2_POPUP
+  
+  HDRS= config.h err.h expr.h globals.h protos.h types.h version.h \
+! lang.h english.h german.h dutch.h finnish.h french.h norwgian.h
+  
+  STDHDRS= config.h types.h protos.h globals.h err.h lang.h
+  
+  LANGHDRS= english.h german.h dutch.h finnish.h french.h norwgian.h
+  
+! SRCS= calendar.c dorem.c dosubst.c expr.c files.c funcs.c globals.c hbcal.c \
+! init.c main.c moon.c omit.c sort.c queue.c token.c trigger.c userfns.c \
+! utils.c var.c os2func.c
+  
+  MANIFEST= README.UNIX README.DOS COPYRIGHT $(HDRS) $(SRCS) Makefile rem rem.1 \
+  remind.1 remind-all.csh remind-all.sh test.rem test-rem test.cmp makefile.tc \
+***************
+*** 47,75 ****
+  
+  OBJS= $(SRCS:.c=$O)
+  
+! rem2ps.exe: rem2ps.obj remind.def
+! 	copy remind.def rem2ps.def
+! 	$(LINK) -o $@ $(LFLAGS) $<
+  
+! rem2ps.obj: rem2ps.c rem2ps.h lang.h config.h
+! 	$(CC) -c $(CFLAGS) rem2ps.c
+  
+! remind.exe: $(OBJS) remind.def
+! 	$(LINK) -o $@ $(LFLAGS) $< 
+  
+! remindb.exe: remind.exe
+! 	$(BIND) -o $@ $<
+  
+! rem2psb.exe: rem2ps.exe
+! 	$(BIND) -o $@ $<
+  
+! .c.$O:
+! 	$(CC) -c $(CFLAGS) $<
+  
+! clean:
+! 	rm -f *$O
+  
+! rem2ps$O: rem2ps.c rem2ps.h config.h
+  calendar$O: calendar.c $(STDHDRS) expr.h
+  dorem$O: dorem.c $(STDHDRS) expr.h
+  dosubst$O: dosubst.c $(STDHDRS) $(LANGHDRS)
+--- 63,90 ----
+  
+  OBJS= $(SRCS:.c=$O)
+  
+! all: remind.exe rem2ps.exe
+  
+! .c$O:
+! 	$(CC) -c $(CFLAGS) $(OS2_POPUP) $*.c
+  
+! rem2ps.exe: rem2ps$O
+! 	$(CC) $(LFLAGS) $(LBIND) -o $@ rem2ps$O $(LFLAGS2)
+  
+! remind.exe: $(OBJS)
+! 	$(CC) $(LFLAGS) -o $@ $(OBJS) $(LFLAGS2)
+! 	$(BIND)
+  
+! clean:
+! 	rm -f *.o *.obj *~ core *.bak
+  
+! clobber:
+! 	rm -f *.o *.obj *~ remind.exe rem2ps.exe test.out core *.bak
+  
+! test:
+! 	test-rem.cmd
+  
+! rem2ps$O: rem2ps.c rem2ps.h lang.h config.h
+  calendar$O: calendar.c $(STDHDRS) expr.h
+  dorem$O: dorem.c $(STDHDRS) expr.h
+  dosubst$O: dosubst.c $(STDHDRS) $(LANGHDRS)
+***************
+*** 76,87 ****
+  expr$O: expr.c $(STDHDRS) expr.h
+  files$O: files.c $(STDHDRS)
+  funcs$O: funcs.c $(STDHDRS) expr.h version.h
+! globals$O: globals.c config.h types.h globals.h err.h lang.h
+! init$O: init.c $(STDHDRS) expr.h version.h
+  main$O: main.c $(STDHDRS) expr.h
+  moon$O: moon.c $(STDHDRS)
+  omit$O: omit.c $(STDHDRS)
+  sort$O: sort.c $(STDHDRS)
+  token$O: token.c $(STDHDRS)
+  trigger$O: trigger.c $(STDHDRS) expr.h
+  userfns$O: userfns.c $(STDHDRS) expr.h
+--- 91,104 ----
+  expr$O: expr.c $(STDHDRS) expr.h
+  files$O: files.c $(STDHDRS)
+  funcs$O: funcs.c $(STDHDRS) expr.h version.h
+! globals$O: globals.c config.h types.h globals.h err.h lang.h $(LANGHDRS)
+! hbcal$O: hbcal.c $(STDHDRS)
+! init$O: init.c $(STDHDRS) expr.h version.h $(LANGHDRS)
+  main$O: main.c $(STDHDRS) expr.h
+  moon$O: moon.c $(STDHDRS)
+  omit$O: omit.c $(STDHDRS)
+  sort$O: sort.c $(STDHDRS)
++ queue$O: queue.c $(STDHDRS)
+  token$O: token.c $(STDHDRS)
+  trigger$O: trigger.c $(STDHDRS) expr.h
+  userfns$O: userfns.c $(STDHDRS) expr.h
+diff -c remind-3.0.10/os2func.c new/os2func.c
+*** remind-3.0.10/os2func.c	Tue Oct 12 13:44:56 1993
+--- new/os2func.c	Fri Nov 05 18:32:12 1993
+***************
+*** 10,21 ****
+  /*  REMIND is Copyright (C) 1993 by David F. Skoll.            */
+  /*                                                             */
+  /***************************************************************/
+! #ifdef __OS2__
+  #define INCL_VIO
+  #define INCL_KBD
+  #include <os2.h>
+  
+  #include <stdio.h>
+  #include <string.h>
+  #ifdef OS2DBG
+  #include <dos.h>
+--- 10,31 ----
+  /*  REMIND is Copyright (C) 1993 by David F. Skoll.            */
+  /*                                                             */
+  /***************************************************************/
+! #ifdef OS2_POPUP
+  #define INCL_VIO
+  #define INCL_KBD
++ #endif
++ 
++ #ifdef _MSC_VER
++ #define INCL_DOSPROCESS
++ #endif
++ 
++ #if defined(OS2_POPUP) || defined(_MSC_VER)
+  #include <os2.h>
++ #endif
+  
++ #ifdef OS2_POPUP
+  #include <stdio.h>
++ #include <stdlib.h>
+  #include <string.h>
+  #ifdef OS2DBG
+  #include <dos.h>
+***************
+*** 26,40 ****
+  #include "types.h"
+  #include "protos.h"
+  
+  static APIRET apiret = 0;
+  static KBDKEYINFO kbci;
+  static char *pszPressAny = "\r\nPress any key to continue";
+! static USHORT pflags = VP_WAIT;
+  static HKBD hkbd = 0;
+! static char VioSubstBuffer[2*LINELEN];
+  
+  void StartPopUp()
+  {
+      if (!(DebugFlag & DB_ECHO_LINE))
+         VioPopUp(&pflags, 0);
+  }
+--- 36,55 ----
+  #include "types.h"
+  #include "protos.h"
+  
++ #ifdef _MSC_VER
++ typedef USHORT APIRET;
++ #endif
++ 
+  static APIRET apiret = 0;
+  static KBDKEYINFO kbci;
+  static char *pszPressAny = "\r\nPress any key to continue";
+! static USHORT pflags = VP_WAIT;  /* | VP_TRANSPARENT; */
+  static HKBD hkbd = 0;
+! static char VioSubstBuffer[SHELLSIZE + 1];
+  
+  void StartPopUp()
+  {
++   if (OS2MODE)
+      if (!(DebugFlag & DB_ECHO_LINE))
+         VioPopUp(&pflags, 0);
+  }
+***************
+*** 43,51 ****
+  {
+      if (DebugFlag & DB_ECHO_LINE)
+  	return;
+!     VioWrtTTY(pszPressAny, strlen(pszPressAny), 0);
+!     KbdCharIn(&kbci, IO_WAIT, hkbd);
+!     VioEndPopUp(0);
+  }
+  
+  int PutsPopUp(char *s)
+--- 58,68 ----
+  {
+      if (DebugFlag & DB_ECHO_LINE)
+  	return;
+!     if (OS2MODE) {
+!       VioWrtTTY(pszPressAny, strlen(pszPressAny), 0);
+!       KbdCharIn(&kbci, IO_WAIT, hkbd);
+!       VioEndPopUp(0);
+!     }
+  }
+  
+  int PutsPopUp(char *s)
+***************
+*** 115,121 ****
+--- 132,148 ----
+  #endif
+  #endif
+  
++ #ifdef _MSC_VER
++ unsigned sleep(unsigned sec)
++ {
++   return DosSleep(sec * 1000L);
++ }
++ #endif
++ 
++ #ifndef __EMX__ 
+  int fork()
+  {
+      return(-1);
+  }
++ #endif
++ 
+diff -c remind-3.0.10/protos.h new/protos.h
+*** remind-3.0.10/protos.h	Wed Oct 20 08:54:30 1993
+--- new/protos.h	Sun Oct 31 20:46:00 1993
+***************
+*** 32,38 ****
+  int DoFlush ARGS ((ParsePtr p));
+  void DoExit ARGS ((ParsePtr p));
+  int ParseRem ARGS ((ParsePtr s, Trigger *trig, TimeTrig *tim));
+! int TriggerReminder ARGS ((ParsePtr p, Trigger *t, TimeTrig *tim, int jul));
+  int ShouldTriggerReminder ARGS ((Trigger *t, TimeTrig *tim, int jul));
+  int DoSubst ARGS ((ParsePtr p, char *out, Trigger *t, TimeTrig *tt, int jul, int mode));
+  int DoSubstFromString ARGS ((char *source, char *dest, int jul, int tim));
+--- 32,39 ----
+  int DoFlush ARGS ((ParsePtr p));
+  void DoExit ARGS ((ParsePtr p));
+  int ParseRem ARGS ((ParsePtr s, Trigger *trig, TimeTrig *tim));
+! int TriggerReminder ARGS ((ParsePtr p, Trigger *t, TimeTrig *tim, int jul,
+! 			   int AsPopUp));
+  int ShouldTriggerReminder ARGS ((Trigger *t, TimeTrig *tim, int jul));
+  int DoSubst ARGS ((ParsePtr p, char *out, Trigger *t, TimeTrig *tt, int jul, int mode));
+  int DoSubstFromString ARGS ((char *source, char *dest, int jul, int tim));
+***************
+*** 131,148 ****
+  int SetSysVar ARGS ((const char *name, Value *val));
+  void DumpSysVarByName ARGS ((const char *name));
+  int CalcMinsFromUTC ARGS ((int jul, int tim, int *mins, int *isdst));
+! void FillParagraph ARGS ((char *s));
+  void LocalToUTC ARGS ((int locdate, int loctime, int *utcdate, int *utctime));
+  void UTCToLocal ARGS ((int utcdate, int utctime, int *locdate, int *loctime));
+  int MoonPhase ARGS ((int date, int time));
+  void HuntPhase ARGS ((int startdate, int starttim, int phas, int *date, int *time));
+  int CompareRems ARGS ((int dat1, int tim1, int prio1, int dat2, int tim2, int prio2, int bydate, int bytime, int byprio));
+  
+  #if defined(__OS2__)
+  int fork ARGS ((void));
+  void StartPopUp ARGS ((void));
+  void EndPopUp ARGS ((void));
+  int PutcPopUp ARGS ((int c));
+  int PutlPopUp ARGS ((char *s));
+  int PutsPopUp ARGS ((char *s));
+  #endif
+--- 132,157 ----
+  int SetSysVar ARGS ((const char *name, Value *val));
+  void DumpSysVarByName ARGS ((const char *name));
+  int CalcMinsFromUTC ARGS ((int jul, int tim, int *mins, int *isdst));
+! void FillParagraph ARGS ((char *s, int AsPopUp));
+  void LocalToUTC ARGS ((int locdate, int loctime, int *utcdate, int *utctime));
+  void UTCToLocal ARGS ((int utcdate, int utctime, int *locdate, int *loctime));
+  int MoonPhase ARGS ((int date, int time));
+  void HuntPhase ARGS ((int startdate, int starttim, int phas, int *date, int *time));
+  int CompareRems ARGS ((int dat1, int tim1, int prio1, int dat2, int tim2, int prio2, int bydate, int bytime, int byprio));
++ #ifdef __BORLANDC__
++ void __cdecl SigIntHandler ARGS ((int d));
++ #else
++ void SigIntHandler ARGS ((void));
++ #endif
++ void GotSigInt ARGS ((void));
+  
+  #if defined(__OS2__)
+  int fork ARGS ((void));
++ #if defined(OS2_POPUP)
+  void StartPopUp ARGS ((void));
+  void EndPopUp ARGS ((void));
+  int PutcPopUp ARGS ((int c));
+  int PutlPopUp ARGS ((char *s));
+  int PutsPopUp ARGS ((char *s));
++ #endif
+  #endif
+diff -c remind-3.0.10/queue.c new/queue.c
+*** remind-3.0.10/queue.c	Wed Oct 20 10:16:42 1993
+--- new/queue.c	Mon Nov 01 18:36:36 1993
+***************
+*** 23,31 ****
+  #include <unistd.h>
+  #endif
+  
+! #ifdef __BORLANDC__
+  #include <io.h>
+  #include <dos.h>
+  #include <process.h>
+  #endif
+  
+--- 23,34 ----
+  #include <unistd.h>
+  #endif
+  
+! #if defined(__OS2__) || defined(__MSDOS__)
+! #include <string.h>
+  #include <io.h>
++ #if defined(__BORLANDC__)
+  #include <dos.h>
++ #endif
+  #include <process.h>
+  #endif
+  
+***************
+*** 57,66 ****
+  PRIVATE QueuedRem *FindNextReminder ARGS ((void));
+  PRIVATE int CalculateNextTimeUsingSched ARGS ((QueuedRem *q));
+  
+! #ifdef __OS2__
+  void (__cdecl SigIntHandler(int));
+  #else
+! PRIVATE void SigIntHandler ARGS ((void));
+  #endif
+  
+  /***************************************************************/
+--- 60,69 ----
+  PRIVATE QueuedRem *FindNextReminder ARGS ((void));
+  PRIVATE int CalculateNextTimeUsingSched ARGS ((QueuedRem *q));
+  
+! #ifdef __BORLANDC__
+  void (__cdecl SigIntHandler(int));
+  #else
+! void SigIntHandler ARGS ((void));
+  #endif
+  
+  /***************************************************************/
+***************
+*** 162,168 ****
+--- 165,175 ----
+        q = q->next;
+     }
+  
++ #ifdef __BORLANDC__
++    signal(SIGINT, SigIntHandler);
++ #else
+     if (!DontFork || Daemon) signal(SIGINT, SigIntHandler);
++ #endif
+  
+     /* Sit in a loop, issuing reminders when necessary */
+     while(1) {
+***************
+*** 169,175 ****
+        q = FindNextReminder();
+  
+        /* If no more reminders to issue, we're unless we're a daemon. */
+!       if (!q && !Daemon) exit(0);
+  
+        if (Daemon && !q)
+           TimeToSleep = (long) 60*Daemon;
+--- 176,182 ----
+        q = FindNextReminder();
+  
+        /* If no more reminders to issue, we're unless we're a daemon. */
+!       if (!q && !Daemon) break;
+  
+        if (Daemon && !q)
+           TimeToSleep = (long) 60*Daemon;
+***************
+*** 195,206 ****
+        CreateParser(q->text, &p);
+        trig.typ = q->typ;
+        RunDisabled = q->RunDisabled;
+!       (void) TriggerReminder(&p, &trig, &q->tt, JulianToday);
+        fflush(stdout);
+        
+        /* Calculate the next trigger time */
+        q->tt.nexttime = CalculateNextTime(q);
+     }
+  }
+     
+  
+--- 202,217 ----
+        CreateParser(q->text, &p);
+        trig.typ = q->typ;
+        RunDisabled = q->RunDisabled;
+!       (void) TriggerReminder(&p, &trig, &q->tt, JulianToday, 1);
+        fflush(stdout);
+        
+        /* Calculate the next trigger time */
+        q->tt.nexttime = CalculateNextTime(q);
+     }
++ #ifdef __BORLANDC__
++    signal(SIGINT, SIG_DFL);
++ #endif
++    exit(0);
+  }
+     
+  
+***************
+*** 275,303 ****
+  
+  /***************************************************************/
+  /*                                                             */
+! /* SigIntHandler                                               */
+  /*                                                             */
+! /* For debugging purposes, when sent a SIGINT, we print the    */
+! /* contents of the queue.  This does NOT work when the -f      */
+! /* command-line flag is supplied.                              */
+  /*                                                             */
+  /***************************************************************/
+- #ifdef __OS2__
+- void __cdecl SigIntHandler(int d)
+- #else
+  #ifdef HAVE_PROTOS
+! PRIVATE void SigIntHandler(void)
+  #else
+! static void SigIntHandler()
+  #endif
+- #endif
+  {
+     QueuedRem *q = QueueHead;
+  
+- #ifdef SYSV
+-    signal(SIGINT, SigIntHandler);
+- #endif
+- 
+     printf("Contents of AT queue:%s", NL);
+  
+     while (q) {
+--- 286,305 ----
+  
+  /***************************************************************/
+  /*                                                             */
+! /* GotSigInt						       */
+  /*                                                             */
+! /* Split out what's done on a SIGINT from the SIGINT Handler.  */
+! /* This will be necessary for OS/2 multithreaded.	       */
+  /*                                                             */
+  /***************************************************************/
+  #ifdef HAVE_PROTOS
+! void GotSigInt(void)
+  #else
+! void GotSigInt()
+  #endif
+  {
+     QueuedRem *q = QueueHead;
+  
+     printf("Contents of AT queue:%s", NL);
+  
+     while (q) {
+***************
+*** 315,320 ****
+--- 317,323 ----
+     }
+     printf(NL);
+  }
++ 
+  /***************************************************************/
+  /*                                                             */
+  /*  CheckInitialFile                                           */
+diff -c remind-3.0.10/README.OS2 new/README.OS2
+*** remind-3.0.10/README.OS2	Wed Oct 13 07:51:42 1993
+--- new/README.OS2	Sun Oct 31 20:45:48 1993
+***************
+*** 1,10 ****
+  REMIND version 3.0 for OS/2
+  
+! This file contains instructions for compiling Remind with the
+! Microsoft C compiler under OS/2.  However, there is better support
+! for OS/2 using the Borland C compiler -- see the file README.BCC
+! for details.
+  
+  REMIND is a sophisticated alarm/calendar program.  Details are given
+  in the man page, "remind.1".
+  
+--- 1,13 ----
+  REMIND version 3.0 for OS/2
+  
+! This file contains instructions for compiling Remind under OS/2 with
+! Eberhard Mattes' emx/gcc compiler and with the Microsoft C compiler.
+! There are a number of targets in Makefile.os2, including OS/2-only 
+! versions and bound versions (programs which run under OS/2 and DOS).
+  
++ Note that there is also support for OS/2 using the Borland C 
++ compiler--see the file README.BCC for details.
++ 
+  REMIND is a sophisticated alarm/calendar program.  Details are given
+  in the man page, "remind.1".
+  
+***************
+*** 11,29 ****
+  1 - Read the file COPYRIGHT.  (This may be called COPYRIGH on your
+      MS-DOS system.)
+  
+! 2 - To compile Remind for OS/2, you must use the Microsoft C compiler.
+!     You must also have a decent version of 'make', such as dmake.
+  
+  3 - Examine the file config.h and adjust parameters as needed
+  
+! 4 - Examine the file makefile.os2 and adjust parameters as needed.
+  
+  5 - Type:
+  
+! 	make -f makefile.os2
+  
+! This will make 'remind.exe' which is an OS/2 1.x--2.0 executable, and
+! 'remindb.exe' which is an OS/2 and MSDOS bound executable.
+  
+  The file "defs.rem" has some sample Remind definitions and commands,
+  as well as U.S. and Jewish holidays.
+--- 14,36 ----
+  1 - Read the file COPYRIGHT.  (This may be called COPYRIGH on your
+      MS-DOS system.)
+  
+! 2 - To compile Remind for OS/2, you must use the Microsoft C compiler
+!     or emx/gcc. You must also have a decent version of 'make', such 
+!     as dmake or GNU make.
+  
+  3 - Examine the file config.h and adjust parameters as needed
+  
+! 4 - Examine the file Makefile.os2 and adjust parameters as needed.
+  
+  5 - Type:
+  
+! 	make -f Makefile.os2
+! 
+! to see a list of targets. For example, 
+! 
+! 	make -f Makefile.os2 emx
+  
+! will build a 32-bit emx version which runs under OS/2 2.x and DOS.
+  
+  The file "defs.rem" has some sample Remind definitions and commands,
+  as well as U.S. and Jewish holidays.
+***************
+*** 31,38 ****
+  NOTE that I do not have access to an OS/2 system, so support for this
+  system may not be as good as I'd like.
+  
+! OS/2 support is courtesy of DARREL HANKERSON <HANK@DUCVAX.AUBURN.EDU>.
+! However, if you have problems, please contact me and not Darrel.
+  
+  OTHER LANGUAGE SUPPORT
+  
+--- 38,46 ----
+  NOTE that I do not have access to an OS/2 system, so support for this
+  system may not be as good as I'd like.
+  
+! OS/2 support is courtesy of Russ Herman <rwh@gov.on.ca>, Norman Walsh 
+! <norm@ora.com>, and Darrel Hankerson <hankedr@mail.auburn.edu>. 
+! However, if you have problems, please contact me.
+  
+  OTHER LANGUAGE SUPPORT
+  
+diff -c remind-3.0.10/sort.c new/sort.c
+*** remind-3.0.10/sort.c	Tue Oct 19 08:19:14 1993
+--- new/sort.c	Sun Oct 31 20:45:58 1993
+***************
+*** 166,187 ****
+  	          IssueSortBanner(cur->trigdate);
+  		  olddate = cur->trigdate;
+                 }
+- #ifdef __OS2__
+-                PutlPopUp(cur->text);
+- #else
+                 printf("%s", cur->text);
+- #endif
+              }
+  	    break;
+  
+  	 case MSF_TYPE:
+! #ifdef __OS2__
+!             StartPopUp();
+! #endif
+! 	    FillParagraph(cur->text);
+! #ifdef __OS2__
+!             EndPopUp();
+! #endif
+  	    break;
+  
+  	 case RUN_TYPE:
+--- 166,177 ----
+  	          IssueSortBanner(cur->trigdate);
+  		  olddate = cur->trigdate;
+                 }
+                 printf("%s", cur->text);
+              }
+  	    break;
+  
+  	 case MSF_TYPE:
+! 	    FillParagraph(cur->text, 0);
+  	    break;
+  
+  	 case RUN_TYPE:
+diff -c remind-3.0.10/test-rem.bat new/test-rem.bat
+*** remind-3.0.10/test-rem.bat	Wed Oct 20 12:10:42 1993
+--- new/test-rem.bat	Mon Oct 25 18:20:14 1993
+***************
+*** 12,18 ****
+--- 12,23 ----
+  
+  del test.out > nul
+  set TEST_GETENV=foo bar baz
++ if exist ..\msdos-ex\remind.exe goto bcc
++ remind -e -dxte ./test.rem 16 feb 1991 > test.out
++ goto cmp
++ :bcc
+  ..\msdos-ex\remind -e -dxte .\test.rem 16 feb 1991 > test.out
++ :cmp
+  echo n | comp test.out test1.cmp
+  if errorlevel 1 goto oops
+  echo "Remind:  Acceptance test PASSED"
+diff -c remind-3.0.10/test-rem.cmd new/test-rem.cmd
+*** remind-3.0.10/test-rem.cmd	Wed Oct 20 12:10:32 1993
+--- new/test-rem.cmd	Mon Oct 25 18:11:24 1993
+***************
+*** 13,19 ****
+--- 13,24 ----
+  del /f test.out > nul
+  setlocal
+  set TEST_GETENV=foo bar baz
++ if exist ..\os2-ex\remind.exe goto bcc
++ remind -e -dxte ./test.rem 16 feb 1991 > .\test.out
++ goto cmp
++ :bcc
+  ..\os2-ex\remind -e -dxte .\test.rem 16 feb 1991 > .\test.out
++ :cmp
+  echo n | comp test.out test2.cmp
+  if errorlevel 1 goto oops
+  echo "Remind:  Acceptance test PASSED"

@@ -1,0 +1,396 @@
+
+
+
+REM2PS(1)                                               REM2PS(1)
+
+
+NNAAMMEE
+       rem2ps - draw a PostScript calendar from Remind output
+
+SSYYNNOOPPSSIISS
+       rreemm22ppss [[_o_p_t_i_o_n_s]
+
+DDEESSCCRRIIPPTTIIOONN
+       RReemm22ppss  reads  the  standard  input,  which  should be the
+       results of running RReemmiinndd with the --pp  option.   It  emits
+       PostScript  code  (which draws a calendar) to the standard
+       output.
+
+OOPPTTIIOONNSS
+       --nn     Produce a calendar whose  first  column  is  Monday
+              (rather than Sunday.)
+
+       --pp ffiillee
+              Include the contents of _f_i_l_e in the PostScript pro-
+              logue.  This allows you to define procedures, vari-
+              ables  etc.  which can be used by the PPSS and PPSSFFIILLEE
+              reminders.  You should  not  include  any  document
+              structuring comments in your prologue.
+
+       --ll     Produce  the calendar in landscape mode rather than
+              the default portrait mode.
+
+       --cc[_n]  If _n is omitted, disables the small  calendars  for
+              next  and previous months which are normally gener-
+              ated.  If _n is supplied, it can range from 0 to  3,
+              with the following meanings:
+
+              00      Disable small calendars
+
+              11      Place  the  small  calendars  at the bottom-
+                     right if there  is  room;  otherwise,  place
+                     them at the top-left.
+
+              22      Place the small calendars at the top-left if
+                     there is room; otherwise, place them at  the
+                     bottom-right.
+
+              33      Place the previous month's small calendar at
+                     the top-left and the  next  month's  at  the
+                     bottom-right  if  there  is room; otherwise,
+                     follow _n=1.  A moment's thought reveals that
+                     an  option  which  splits  the  calendars if
+                     there is  room  and  otherwise  follows  _n=2
+                     yields the same results as _n=3.
+
+       --ii     Use ISO 8859-1 standard encoding for the PostScript
+              fonts.  If you do not use this option, the  default
+              encoding is used.
+
+       --ee     Make   the  calendar  fill  the  entire  page.   By
+
+
+
+                        30 September 1993                       1
+
+
+
+
+
+REM2PS(1)                                               REM2PS(1)
+
+
+              default, the calendar is slightly smaller than  the
+              page.   This  allows  days  with  many reminders to
+              "expand" as needed.  However,  if  you  don't  have
+              days  which expand, you can use this option to make
+              all of the boxes slightly bigger.  One  caveat:  If
+              you  do  use  the  --ee  option  and one day has many
+              reminders, the calendar may expand  off  the  page,
+              losing some information.  Experiment!
+
+       --mm mmeeddiiaa
+              Set  the  page size.  If you use the -m option, you
+              must specify the media type, which can  be  one  of
+              the following.  (Sizes are approximate.)
+
+              Letter 8.5 x 11 in.
+
+              Legal  11 x 17 in.
+
+              Ledger 8.5 x 14 in.
+
+              Statement
+                     5.5 x 8.5 in.
+
+              Executive
+                     7.5 x 10 in.
+
+              A3     29.7 x 42 cm.
+
+              A4     21 x 29.7 cm.
+
+              A5     14.8 x 21 cm.
+
+              B4     25.7 x 36.4 cm.
+
+              B5     18.3 x 25.7 cm.
+
+              Folio  8.5 x 13 in.
+
+              Quarto 8.5 x 10.8 in.
+
+              10x14  10 x 14 in.
+
+              Type  "rem2ps  -m  help"  for  a  list of available
+              media.  Note that the media type  (and  all  RReemm22ppss
+              options)  are case-sensitive.  If you don't use the
+              --mm option, the  media  defaults  to  a  compiled-in
+              default  - this is usually Letter for North America
+              and A4 for Europe.  The "-m help" option will  dis-
+              play the compiled-in default.
+
+       --ff[ttsshheedd] _f_o_n_t
+              Set the font for the calendar title, the small cal-
+              endars,  the  day-of-week  headings,  the  calendar
+              entries,  and  the day numbers, respectively.  _F_o_n_t
+
+
+
+                        30 September 1993                       2
+
+
+
+
+
+REM2PS(1)                                               REM2PS(1)
+
+
+              must be the name of a valid PostScript  font.   The
+              default fonts are equivalent to specifying:
+
+                   -ftshe Helvetica -fd Helvetica-BoldOblique
+
+              In  other  words,  the  heading,  entry  and small-
+              calendar fonts are set to Helvetica, and  the  font
+              for   the   day   numbers   is  set  to  Helvetica-
+              BoldOblique.
+
+       --ss[tthheedd] _s_i_z_e
+              Set the size (in points) of the text  for  the  the
+              calendar  title, day-of-week headings, the calendar
+              entries, and the day numbers,  respectively.   _S_i_z_e
+              must  be  a  decimal number.  The default sizes are
+              equivalent to specifying:
+
+                   -sthd 14 -se 8
+
+              In other words, the heading  and  day  numbers  are
+              14-point   fonts,  and  the  calendar  entries  are
+              printed in 8-point text.
+
+       --bb _s_i_z_e
+              Set the size of the blank white border in each cal-
+              endar  box to _s_i_z_e points.  The default border size
+              is 6 points, or 1/12 in.
+
+       --tt _s_i_z_e
+              Set the thickness of the black calendar grid lines.
+              The default is 1, for a line thickness of one point
+              (1/72 in.)
+
+       --oo[llrrttbb] _s_i_z_e
+              Set the left, right, top, and/or bottom margins  to
+              _s_i_z_e points.  For this option only, _s_i_z_e must be an
+              integer.  It represents the margin size in units of
+              1/72  in.   The  default  margin  sizes are 36, for
+              half-inch margins.  If you wish to punch  holes  in
+              the  calendar  page to insert it into a binder, you
+              may wish to increase the left margin to  one  inch.
+              In  that case, you should also decrease the heading
+              font size to 12 points for good output:
+
+            # This gives good results for putting into a binder
+            rem2ps -ol 72 -sh 12
+
+UUSSAAGGEE
+       To use RReemm22ppss, you should pipe the output of  RReemmiinndd  with
+       the  --pp  option  to  RReemm22ppss, and then send the result to a
+       printer.  This is most easily illustrated with examples:
+
+            remind -p12 /dev/null 1 jan 1994 | rem2ps | lpr -Plaser
+
+
+
+
+                        30 September 1993                       3
+
+
+
+
+
+REM2PS(1)                                               REM2PS(1)
+
+
+       That example creates a blank calendar for the entire  year
+       of 1994, and sends it the the printer named "laser."
+
+            remind -p ~/.reminders | rem2ps -l -sd 18 > cal.ps
+
+       This  reminder  creates  a calendar for the current month,
+       filling in entries from the reminder file  "~/.reminders."
+       The  calendar  is  produced in landscape mode, with a font
+       size of 18 for the day numbers.  The result is put in  the
+       PostScript file "cal.ps."
+
+
+VVAARRIIAABBLLEESS AAVVAAIILLAABBLLEE TTOO UUSSEERR--SSUUPPPPLLIIEEDD PPOOSSTTSSCCRRIIPPTT CCOODDEE
+       The  following  variables  are available to PPSS and PPSSFFIILLEE-
+       type reminders.   (This  material  is  duplicated  in  the
+       RReemmiinndd manual page.)
+
+       LineWidth
+              The  width  of  the  black grid lines making up the
+              calendar.
+
+       Border The border between the center of the grid lines and
+              the  space  used  to  print calendar entries.  This
+              border is normally blank space.
+
+       BoxWidth and BoxHeight
+              The width and height of the calendar box, from cen-
+              ter-to-center of the black gridlines.
+
+       InBoxHeight
+              The  height  from  the  center  of the bottom black
+              gridline to the top of the regular  calendar  entry
+              area.  The space from here to the top of the box is
+              used only to draw the day number.
+
+       /DayFont, /TitleFont, /EntryFont, /SmallFont and /HeadFont
+              The  fonts  used to draw the day numbers, the month
+              and year title, the  calendar  entries,  the  small
+              calendars,  and  the  day-of-week headings, respec-
+              tively.
+
+       DaySize, TitleSize, EntrySize and HeadSize
+              The sizes of the above fonts.   (The  size  of  the
+              small  calendar  font  is  _n_o_t  defined here.)  For
+              example, if you wanted to  print  the  Hebrew  date
+              next  to  the  regular  day number in the calendar,
+              use:
+
+            REM PS Border BoxHeight Border sub DaySize sub moveto \
+               /DayFont findfont DaySize scalefont setfont \
+               ([hebday(today())] [hebmon(today())]) show
+
+              Note how /DayFont and DaySize are used.
+
+
+
+
+                        30 September 1993                       4
+
+
+
+
+
+REM2PS(1)                                               REM2PS(1)
+
+
+       Note that if you supply PostScript code, it is possible to
+       produce   invalid  PostScript  files.   Always  test  your
+       PostScript thoroughly  with  a  PostScript  viewer  before
+       sending  it  to the printer.  You should not use any docu-
+       ment structuring comments in your PostScript code.
+
+       In addition, prior to  drawing  a  calendar  page,  RReemm22ppss
+       emits the following PostScript code:
+
+            save (mon) (yr) PreCal restore
+
+       where  _m_o_n  and  _y_r are the month and year of the calendar
+       page.  The default PPrreeCCaall procedure simply pops the  argu-
+       ments  and does nothing.  However, you can define a PPrreeCCaall
+       function in your prologue file to do whatever you  want  -
+       it  can  draw  a  background  for the entire calendar, for
+       instance.
+
+       In the context of the PPrreeCCaall procedure, the following con-
+       ditions hold:
+
+       o      The  PostScript  origin  is at the bottom left-hand
+              corner of the page, and PostScript units  of  1/72"
+              are in effect.
+
+       o      The  variables MinX, MinY, MaxX and MaxY define the
+              bounding box within  which  the  calendar  will  be
+              drawn.
+
+       o      The font and font-size variables, as well as Border
+              and LineWidth described previously, are valid.
+
+       For an example, create a file called "myprolog" whose con-
+       tents are:
+
+                 /PreCal {
+                  /yr exch def
+                  /mon exch def
+                  /xsiz1 MaxX MinX sub def
+                  /ysiz1 MaxY MinY sub def
+                  /xsiz xsiz1 MinX sub MinX sub def
+                  /ysiz ysiz1 MinY sub MinY sub def
+                  xsiz
+                  ysiz
+                  lt
+                  {/len xsiz 1.41 mul def
+                   MinX MinX add ysiz1 xsiz1 sub 2 div MinY add MinY add moveto}
+                  {/len ysiz 1.41 mul def
+                   xsiz1 ysiz1 sub 2 div MinX add MinX add MinY MinY add moveto}
+                  ifelse
+                  /Helvetica-Bold findfont 1 scalefont setfont
+                  mon stringwidth pop
+                  ( ) stringwidth pop add
+                  yr stringwidth pop add
+
+
+
+                        30 September 1993                       5
+
+
+
+
+
+REM2PS(1)                                               REM2PS(1)
+
+
+                  len exch div /len exch def
+                  /Helvetica-Bold findfont len scalefont setfont
+                  0.95 setgray
+                  45 rotate
+                  mon show
+                  ( ) show
+                  yr show
+                 } bind def
+
+       Use  that  file with the RReemm22ppss --pp option to create calen-
+       dars with the year and month in large grey letters in  the
+       background of the calendar.
+
+
+AAUUTTHHOORR
+       David F. Skoll
+
+BBUUGGSS
+       All RReemm22ppss options are case-sensitive, unlike RReemmiinndd.  Any
+       time you supply a font name or size,  line  thickness,  or
+       border  width, it is treated as a string and sent straight
+       to  the  PostScript  interpreter.   Thus,  if  you  supply
+       invalid  fonts or sizes, RReemm22ppss will not complain, but the
+       resulting PostScript output will probably not work.
+
+       You should ensure that the values you  supply  for  margin
+       widths  are  sensible.   If they are too big for the media
+       size, RReemm22ppss will not complain, but again, the  PostScript
+       output will probably not work.
+
+SSEEEE AALLSSOO
+       RReemmiinndd
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        30 September 1993                       6
+
+

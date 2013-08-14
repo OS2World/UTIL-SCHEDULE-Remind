@@ -1,0 +1,4158 @@
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+NNAAMMEE
+       remind - a sophisticated reminder service
+
+SSYYNNOOPPSSIISS
+       rreemmiinndd [[_o_p_t_i_o_n_s] _f_i_l_e_n_a_m_e [_d_a_t_e]
+
+DDEESSCCRRIIPPTTIIOONN
+       RReemmiinndd  reads  the supplied _f_i_l_e_n_a_m_e and executes the com-
+       mands found  in  it.   The  commands  are  used  to  issue
+       reminders  and alarms.  Each reminder or alarm can consist
+       of a message sent to standard output, or a program  to  be
+       executed.
+
+       If _f_i_l_e_n_a_m_e is specified as a single dash '-', then RReemmiinndd
+       takes its input from standard input.  This also implicitly
+       enables the --oo option, described below.
+
+OOPPTTIIOONNSS
+       --nn     The  --nn  option  causes  RReemmiinndd  to  print the nneexxtt
+              occurrence of each reminder in  a  simple  calendar
+              format.   You  can  sort this by date by piping the
+              output through ssoorrtt((11)).
+
+       --rr     The --rr  option  disables  RRUUNN  directives  and  the
+              sshheellll(()) function
+
+       --cc_n    The  --cc  option causes RReemmiinndd to produce a calendar
+              which is sent to standard output.  If you supply  a
+              number  _n,  then a calendar will be generated for _n
+              months,  starting  with  the  current  month.    By
+              default,  a  calendar for only the current month is
+              produced.  If _n starts with '+',  then  a  calendar
+              for _n weeks is produced.
+
+       --ww_c_o_l[,_p_a_d[,_s_p_c]]]
+              The  --ww  option specifies the output width, padding
+              and spacing of the formatted calendar output.   _C_o_l
+              specifies  the  number  of  columns  in  the output
+              device, and defaults to 80.  _P_a_d specifies how many
+              lines  to  use to "pad" empty calendar boxes.  This
+              defaults to 5.  If you have many reminders on  cer-
+              tain  days,  which  make your calendar too large to
+              fit on a page, you can try reducing _p_a_d to make the
+              empty  boxes smaller.  _S_p_c specifies how many blank
+              lines to leave between the day number and the first
+              reminder entry.  It defaults to 1.
+
+              Any  of  _c_o_l,  _p_a_d or _s_p_c can be omitted, providing
+              you provide the correct number  of  commas.   Don't
+              use any spaces in the option.
+
+       --ss_n    The  --ss  option  is  very similar to the --cc option,
+              except that the output calendar is  not  formatted.
+              It is listed in a "simple format" which can be used
+
+
+
+                         13 October 1993                        1
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+              as input for  more  sophisticated  calendar-drawing
+              programs.   If _n starts with "+", then it is inter-
+              preted as a number of weeks.
+
+       --pp_n    The --pp option is very similar  to  the  --ss  option,
+              except that the output contains additional informa-
+              tion for use by the rreemm22ppss program, which creates a
+              PostScript  calendar.   For  this  option, _n cannot
+              start with "+"; it must specify a number of months.
+
+       --mm     The  --mm  option  causes  the --cc option to produce a
+              calendar whose first column is Monday  rather  than
+              Sunday.   (This conforms to the international stan-
+              dard.)  It does _n_o_t, however, affect the --pp  or  --ss
+              options.
+
+       --vv     The  --vv  option makes the output of RReemmiinndd slightly
+              more verbose.
+
+       --oo     The --oo option causes  RReemmiinndd  to  ignore  all  OONNCCEE
+              directives.
+
+       --tt     The  --tt  option  causes  RReemmiinndd to trigger all non-
+              expired reminders, regardless of the _d_e_l_t_a supplied
+              for each reminder.
+
+       --hh     The  --hh option ("hush...") suppresses certain warn-
+              ing and information messages.  In particular, if no
+              reminders are triggered, this mode produces no out-
+              put.
+
+       --aa     The --aa option  causes  RReemmiinndd  not  to  immediately
+              trigger timed reminders which would also be queued.
+              It also causes RReemmiinndd not to place timed  reminders
+              in a calendar.
+
+       --qq     The  --qq  option  causes  RReemmiinndd  not to queue timed
+              reminders for later execution.
+
+       --ff     The --ff option causes RReemmiinndd to remain in the  fore-
+              ground  when  processing  queued  reminders, rather
+              than forking off a  background  process  to  handle
+              them.
+
+       --ee     The --ee option diverts error messages (normally sent
+              to the standard error stream) to the standard  out-
+              put stream.
+
+       --dd_c_h_a_r_s
+              The --dd option enables certain debugging modes.  The
+              _c_h_a_r_s specify which modes to enable:
+
+         ee      Echo all input lines
+
+
+
+
+                         13 October 1993                        2
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+         xx      Trace all expression evaluation
+
+         tt      Display all trigger date computation
+
+         vv      Dump the variable table after  execution  of  the
+                reminder script
+
+         ll      Echo lines when displaying error messages
+
+       --gg[aa||dd[aa||dd[aa||dd]]]
+              Normally,  reminders  are  issued  in  the order in
+              which they are encountered in the reminder  script.
+              The  --gg  option  cause  RReemmiinndd to sort reminders by
+              date and time prior to issuing them.  The  optional
+              aa  and dd characters specify the sort order (ascend-
+              ing or descending) for the date, time and  priority
+              fields.   See  the  section "Sorting Reminders" for
+              more information.
+
+       --bb[_n]  Set the time format for the  calendar  and  simple-
+              calendar  outputs.   _N  can range from 0 to 2, with
+              the default 0.  A value of 0  causes  times  to  be
+              inserted in 12-hour (am/pm) format.  1 causes times
+              to be inserted in 24-hour format,  and  2  inhibits
+              the  automatic  insertion  of times in the calendar
+              output.
+
+       --xx[_n]  Sets the iteration limit for the SSAATTIISSFFYY clause  of
+              a RREEMM command.  Defaults to 150.
+
+       --kk_c_m_d  Instead of simply printing MMSSGG-type reminders, this
+              causes them to be passed to the specific _c_m_d.   You
+              must  use  '%s'  where you want the body to appear,
+              and may need to  enclose  this  option  in  quotes.
+              Also, because _c_m_d is run using the ssyysstteemm(()) library
+              function, shell quotes in the body of  the  message
+              may  cause  problems.   Note that this option oovveerr--
+              rriiddeess the --rr option and the RRUUNN OOFFFF command.
+
+              As an example, suppose you have an X Window program
+              called  xmessage,  which  pops up a window and dis-
+              plays its invocation arguments.  You could use:
+
+                        remind '-kxmessage %s &' ...
+
+              to have all of your  MMSSGG-type  reminders  processed
+              using xmessage.
+
+              A word of warning:  It is very easy to spawn dozens
+              of xmessage processes with the above technique.  So
+              be  very  careful.   Also,  the _c_m_d is passed as an
+              argument  to  sspprriinnttff(()).   If  you  use  formatting
+              directives  other  than %s, or use more than one %s
+              directive, there's a good chance that you'll  crash
+
+
+
+                         13 October 1993                        3
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+              RReemmiinndd.  Finally, because _c_m_d is executed using the
+              ssyysstteemm(()) library function, shell delimiters in MMSSGG-
+              type  reminders  could cause problems.  _I_n _p_a_r_t_i_c_u_-
+              _l_a_r_, _n_e_v_e_r _r_u_n _u_n_t_r_u_s_t_e_d  _r_e_m_i_n_d_e_r_s  _u_s_i_n_g  _t_h_e  --kk
+              _o_p_t_i_o_n.  A reminder like:
+
+                   REM msg foo ; rm -Rf .
+
+              would cause havoc if run with the --kk option.
+
+       --zz[_n]  Runs  RReemmiinndd in the daemon mode.  If _n is supplied,
+              it specifies how often (in minutes)  RReemmiinndd  should
+              wake  up  to  check if the reminder script has been
+              changed.  _N defaults to 5, and can range from 5  to
+              60.   Note  that  the  use  of  the  --zz option also
+              enables the --ff option.
+
+       --uu_n_a_m_e Runs RReemmiinndd with the uid and gid of the user speci-
+              fied  by  _n_a_m_e.  The option changes the uid and gid
+              as described, and sets  the  environment  variables
+              HOME,  SHELL and USER to the home directory, shell,
+              and user name, respectively, of the specified user.
+              LOGNAME  is  also  set  to the specified user name.
+              This option is meant for use in shell scripts which
+              mail reminders to all users.
+
+              Non-root  users  can  also use the --uu option.  How-
+              ever, in this case, it only changes the environment
+              variables  as  described above.  It does not change
+              the effective uid or gid.
+
+       --ii_v_a_r==_e_x_p_r
+              Sets the value of the specified _v_a_r  to  _e_x_p_r,  and
+              pprreesseerrvveess  _v_a_r.   _E_x_p_r  can  be  any  valid  RReemmiinndd
+              expression.  See the  section  "Initializing  Vari-
+              ables on the Command Line" for more details.
+
+       If  you supply a _d_a_t_e on the command line, it must consist
+       of _d_a_y _m_o_n_t_h _y_e_a_r, where _d_a_y is  the  day  of  the  month,
+       _m_o_n_t_h  is  at least the first three letters of the English
+       name of the month, and _y_e_a_r is a year (all 4 digits)  from
+       1990 to about 2075.  You can leave out the _d_a_y, which then
+       defaults to 1.
+
+       If you do supply a _d_a_t_e on the command line,  then  RReemmiinndd
+       uses it, rather than the actual system date, as its notion
+       of "today."  This lets you  create  calendars  for  future
+       months,  or  test  to see how your reminders will be trig-
+       gered in the future.
+
+       In addition, as part of the _d_a_t_e component, you can supply
+       a  _r_e_p_e_a_t parameter, which has the form *_n_u_m.  This causes
+       RReemmiinndd to be run _n_u_m times, with the date incrementing  on
+       each  iteration.  You may have to enclose the parameter in
+
+
+
+                         13 October 1993                        4
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+       quotes to  avoid  shell  expansion.   See  the  subsection
+       "Repeated  Execution"  in  the section "Calendar Mode" for
+       more information.
+
+RREEMMIINNDDEERR FFIILLEESS
+       RReemmiinndd uses scripts to control its  operation.   The  com-
+       mands  inside  a script can range from the very simple and
+       almost immediately understandable:
+
+            REM 6 Jan MSG David's birthday
+
+       to the baroque and obscure:
+
+            REM [trigger(date(thisyear, 1, 1) + 180)] ++5 OMIT \
+            sat sun BEFORE MSG [ord(thisyear-1980)] payment due %b!
+
+       A reminder file consists of commands, with one command per
+       line.   Several lines can be continued using the backslash
+       character, as in the above example.  In this case, all  of
+       the  concatenated  lines  are  treated as a single line by
+       RReemmiinndd.  Note that if an error occurs, RReemmiinndd reports  the
+       line number of the last line of a continued line.
+
+       RReemmiinndd  ignores  blank lines, and lines beginning with the
+       '#' or ';' characters.  You can use  the  semicolon  as  a
+       comment  character  if  you  wish  to pass a RReemmiinndd script
+       through the C  pre-processor,  which  interprets  the  '#'
+       character as the start of a pre-processing directive.
+
+       RReemmiinndd  is  not  case sensitive; you can generally use any
+       mixture of upper- or lower-case for commands,  parameters,
+       invocation options, etc.
+
+TTHHEE RREEMM CCOOMMMMAANNDD
+       The  most  powerful  command in a RReemmiinndd script is the RREEMM
+       command.   This  command  is   responsible   for   issuing
+       reminders.  Its syntax is:
+
+              RREEMM  [OONNCCEE]  [_d_a_t_e___s_p_e_c]  [_b_a_c_k]  [_d_e_l_t_a]  [_r_e_p_e_a_t]
+              [PPRRIIOORRIITTYY _p_r_i_o]  [SSKKIIPP  |  BBEEFFOORREE  |  AAFFTTEERR]  [OOMMIITT
+              _o_m_i_t___l_i_s_t]  [AATT  _t_i_m_e  [_t_d_e_l_t_a]  [_t_r_e_p_e_a_t]]  [SSCCHHEEDD
+              _s_c_h_e_d___f_u_n_c_t_i_o_n]   [UUNNTTIILL   _e_x_p_i_r_y___d_a_t_e]   [SSCCAANNFFRROOMM
+              _s_c_a_n___d_a_t_e]  MMSSGG  | MMSSFF | RRUUNN | CCAALL | SSAATTIISSFFYY | PPSS |
+              PPSSFFIILLEE _b_o_d_y
+
+       The parts of the RREEMM  command  can  be  specified  in  any
+       order,  except  that  the _b_o_d_y must come immediately after
+       the MMSSGG, RRUUNN, CCAALL, PPSS, PPSSFFIILLEE or SSAATTIISSFFYY keyword.
+
+       The RREEMM token is optional, providing that the remainder of
+       the  command cannot be mistaken for another RReemmiinndd command
+       such as OOMMIITT or RRUUNN.   The  portion  of  the  RREEMM  command
+       before the MMSSGG, MMSSFF RRUUNN, CCAALL or SSAATTIISSFFYY clause is called a
+       _t_r_i_g_g_e_r.
+
+
+
+                         13 October 1993                        5
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+       MMSSGG,, MMSSFF,, RRUUNN,, CCAALL,, PPSS aanndd PPSSFFIILLEE
+
+       These keywords denote the _t_y_p_e of the reminder.   (SSAATTIISSFFYY
+       is  more complicated and will be explained later.)  A MMSSGG-
+       type reminder normally prints a message  to  the  standard
+       output, after passing the _b_o_d_y through a special substitu-
+       tion filter, described in the  section  "The  Substitution
+       Filter."   However,  if  you have used the --kk command-line
+       option, then MMSSGG-type reminders are passed to  the  appro-
+       priate  program.   Note that the options --cc, --ss, --pp and --nn
+       disable the --kk option.
+
+       The MMSSFF keyword is almost the same  as  the  MMSSGG  keyword,
+       except  that the reminder is formatted to fit into a para-
+       graph-like format.  Three  system  variables  control  the
+       formatting  of MMSSFF-type reminders - they are $$FFiirrssttIInnddeenntt,
+       $$SSuubbssIInnddeenntt and $$FFoorrmmWWiiddtthh.  They  are  discussed  in  the
+       section  "System  Variables."   The MMSSFF keyword causes the
+       spacing of your reminder to be altered - extra spaces  are
+       discarded,  and  two  spaces  are placed after periods and
+       other characters, as specified  by  the  system  variables
+       $$EEnnddSSeenntt  and  $$EEnnddSSeennttIIgg.   Note  that if the body of the
+       reminder includes newline characters  (placed  there  with
+       the  %_  sequence),  then  the newlines are treated as the
+       beginnings of new paragraphs, and the $$FFiirrssttIInnddeenntt  inden-
+       tation is used for the next line.  You can use two consec-
+       utive newlines to have spaced paragraphs  emitted  from  a
+       single reminder body.
+
+       A  RRUUNN-type reminder also passes the _b_o_d_y through the sub-
+       stitution filter, but then executes the result as a system
+       command.   A  CCAALL-type  reminder  is  used  only  to place
+       entries in the calendar produced when RReemmiinndd is  run  with
+       the --cc, --ss or --pp options.
+
+       A  PPSS  or  PPSSFFIILLEE-type reminder is used to pass PostScript
+       code directly to the  printer  when  producing  PostScript
+       calendars.   This  can  be  used to shade certain calendar
+       entries (see the psshade() function), include graphics  in
+       the  calendar,  or  almost any other purpose you can think
+       of.  You should not use these types  of  reminders  unless
+       you  are  an  expert  PostScript  programmer.   The PPSS and
+       PPSSFFIILLEE reminders are ignored unless RReemmiinndd is run with the
+       --pp  option.   See  the section "More about PostScript" for
+       more details.
+
+       DDAATTEE SSPPEECCIIFFIICCAATTIIOONNSS
+
+       A _d_a_t_e___s_p_e_c consists of zero to four parts.   These  parts
+       are _d_a_y (day of month), _m_o_n_t_h (month name), _y_e_a_r and _w_e_e_k_-
+       _d_a_y_.  _M_o_n_t_h and _w_e_e_k_d_a_y are the English  names  of  months
+       and weekdays.  At least the first three characters must be
+       used.  The following are examples of the various parts  of
+       a _d_a_t_e___s_p_e_c_:
+
+
+
+                         13 October 1993                        6
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+       _d_a_y_:   1, 22, 31, 14, 3
+
+       _m_o_n_t_h_: JANUARY, feb, March, ApR, may, Aug
+
+       _y_e_a_r_:  1990,  1993,  2030,  95 (interpreted as 1995).  The
+              year can range from 1990 to 2075.
+
+       _w_e_e_k_d_a_y_:
+              Monday, tue, Wed, THU, Friday, saturday, sundAy
+
+       Note that there can be several  _w_e_e_k_d_a_y  components  sepa-
+       rated by spaces in a _d_a_t_e___s_p_e_c_.
+
+       IINNTTEERRPPRREETTAATTIIOONN OOFF DDAATTEE SSPPEECCIIFFIICCAATTIIOONNSS
+
+       The  following  examples  show how date specifications are
+       interpreted.
+
+       1. Null date specification -  the  reminder  is  triggered
+       every  day.  The trigger date for a specific run is simply
+       the current system date.
+
+       2. Only _d_a_y present.  The reminder  is  triggered  on  the
+       specified  day of each month.  The trigger date for a par-
+       ticular run is the closest such day to the current  system
+       date.  For example:
+            REM 1 MSG First of every month.
+            REM 31 MSG 31st of every month that has 31 days.
+
+       3.  Only  _m_o_n_t_h  present.  The reminder is triggered every
+       day of the specified month.  Example:
+            REM Feb MSG Every day in February
+
+       4.  _d_a_y and _m_o_n_t_h present.  Examples:
+            REM 6 Jan MSG Every 6th of January
+            REM Feb 29 MSG Every 29th of February
+
+       5.  Only _y_e_a_r present. Example:
+            REM 1991 MSG Every day in 1991
+
+       6.  _y_e_a_r and _d_a_y present.  Examples:
+            REM 1 1990 MSG 1st of every month in 1990
+            REM 1992 23 MSG 23rd of every month in 1992
+
+       7.  _y_e_a_r and _m_o_n_t_h present.  Examples:
+            REM Feb 1991 MSG Every day in Feb 1991
+            REM 1992 September MSG Every day in Sept 1992
+
+       8.  _y_e_a_r_, _m_o_n_t_h and _d_a_y present.  Examples:
+            REM 8 Jan 1991 MSG 8th January 1991.
+            REM 1992 March 9 MSG 9th March 1992.
+
+       9.  _w_e_e_k_d_a_y only.  Examples:
+            REM Sat MSG Every Saturday
+
+
+
+                         13 October 1993                        7
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+            REM Mon Tue Wed Thu Fri MSG Every working day
+            REM Monday Wednesday MSG Every Monday and Wednesday
+
+       10.  _w_e_e_k_d_a_y and _d_a_y present.  Examples:
+            REM Sat 1 MSG First Saturday of every month
+            REM Mon Tue Wed Thu Fri 15 \
+                 MSG 1st working day after 15th of every month
+
+       11.  _w_e_e_k_d_a_y and _m_o_n_t_h present.  Examples:
+            REM Mon March MSG Every Monday in March
+            REM Mon Tue Wed Thu Fri Feb MSG Every working day in February
+
+       12.  _w_e_e_k_d_a_y_, _m_o_n_t_h and _d_a_y present.  Examples:
+            REM Mon 1 March MSG First Monday in March
+            REM Sat Sun 15 July MSG First Sat or Sun on or after 15 July
+
+       13.  _w_e_e_k_d_a_y and _y_e_a_r present.  Example:
+            REM Sat Sun 1991 MSG Every Saturday and Sunday in 1991
+
+       14.  _w_e_e_k_d_a_y_, _d_a_y and _y_e_a_r present.  Examples:
+            REM Mon 15 1990 MSG 1st Mon after 15th of every month in 1990
+            REM Mon Tue Wed Thu Fri 1 1990 \
+                 MSG 1st working day of every month in 1990
+
+       15.  _w_e_e_k_d_a_y_, _m_o_n_t_h and _y_e_a_r present.  Example:
+            REM Mon Wed 1991 Feb MSG Every Mon and Wed in Feb 1991.
+
+       16.  _w_e_e_k_d_a_y_, _d_a_y_, _m_o_n_t_h and _y_e_a_r present.  Example:
+            REM Mon Tue Wed Thu Fri 28 Oct 1990 \
+                 MSG 1st working day on or after 28 October 1990.
+
+       Note that when both _w_e_e_k_d_a_y and _d_a_y are specified,  RReemmiinndd
+       chooses the first date on or after the specified _d_a_y which
+       also satisfies the _w_e_e_k_d_a_y constraint.  It  does  this  by
+       picking the first date on or after the specified _d_a_y which
+       is listed in the list of _w_e_e_k_d_a_y_s_.  Thus, a reminder like:
+
+            REM Mon Tue 28 Oct 1990 MSG Hi
+
+       would  be  issued  only  on  Monday, 29 October, 1990.  It
+       would not be issued on Tuesday, 30  October,  1990,  since
+       the  29th  is  the  first date to satisfy the _w_e_e_k_d_a_y con-
+       straints.
+
+       BBAACCKKWWAARRDD SSCCAANNNNIINNGG
+
+       Sometimes, it is necessary to specify a date  as  being  a
+       set  amount of time before another date.  For example, the
+       last Monday in a given month is computed as the first Mon-
+       day  in the next month, minus 7 days.  The _b_a_c_k specifica-
+       tion in the reminder is used in this case:
+
+            REM Mon 1 -7 MSG Last Monday of every month.
+
+
+
+
+                         13 October 1993                        8
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+       A _b_a_c_k is specified with one or two dashes followed by  an
+       integer.  This causes RReemmiinndd to move "backwards" from what
+       would  normally  be  the  trigger  date.   The  difference
+       between --7 and -7 will be explained when the OOMMIITT keyword
+       is described.
+
+       AADDVVAANNCCEE WWAARRNNIINNGG
+
+       For some reminders, it is appropriate to  receive  advance
+       warning  of  the  event.   For example, you may wish to be
+       reminded of someone's birthday several  days  in  advance.
+       The _d_e_l_t_a portion of the RREEMM command achieves this.  It is
+       specified as one or two "+" signs followed by a number  _n.
+       Again,  the difference between the "+" and "++" forms will
+       be explained under the OOMMIITT keyword.  RReemmiinndd will  trigger
+       the  reminder on computed trigger date, as well as on each
+       of the _n days before the event.  Here are some examples:
+
+            REM 6 Jan +5 MSG Remind me of birthday 5 days in advance.
+
+       The above example would be triggered every 6th of January,
+       as well as the 1st through 5th of January.
+
+       PPEERRIIOODDIICC RREEMMIINNDDEERRSS
+
+       We  have already seen some built-in mechanisms for certain
+       types of periodic reminders.  For example, an event occur-
+       ring every Wednesday could be specified as:
+
+            REM Wed MSG Event!
+
+       However, events which do not repeat daily, weekly, monthly
+       or yearly require another approach.  The _r_e_p_e_a_t  component
+       of  the  RREEMM command fills this need.  To use it, you must
+       completely specify  a  date  (year,  month  and  day,  and
+       optionally  weekday.)  The _r_e_p_e_a_t component is an asterisk
+       followed by a number specifying the repetition  period  in
+       days.
+
+       For  example, suppose you get paid every second Wednesday,
+       and your last payday was Wednesday, 28 October, 1992.  You
+       can use:
+
+            REM 28 Oct 1992 *14 MSG Payday
+
+       This  issues the reminder every 14 days, starting from the
+       calculated trigger date.  You can use _d_e_l_t_a and _b_a_c_k  with
+       _r_e_p_e_a_t_.  Note, however, that the _b_a_c_k is used only to com-
+       pute the initial trigger date;  thereafter,  the  reminder
+       repeats  with  the  specified  period.   Similarly, if you
+       specify a weekday, it is used only to calculate  the  ini-
+       tial date, and does not affect the repetition period.
+
+       SSCCAANNFFRROOMM
+
+
+
+                         13 October 1993                        9
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+       The  SSCCAANNFFRROOMM  keyword  is for advanced RReemmiinndd programmers
+       only, and will be explained in the section "Details  about
+       Trigger  Computation"  near  the end of this manual.  Note
+       that SSCCAANNFFRROOMM is available only in versions of RReemmiinndd from
+       03.00.04 up.
+
+       PPRRIIOORRIITTYY
+
+       The  PPRRIIOORRIITTYY  keyword must be followed by a number from 0
+       to 9999.  It is used in calendar  mode  and  when  sorting
+       reminders.   If  two  reminders have the same trigger date
+       and time, then they are sorted by priority.  If the PPRRIIOORR--
+       IITTYY keyword is not supplied, a default priority of 5000 is
+       used.
+
+       EEXXPPIIRRYY DDAATTEESS
+
+       Some reminders should be issued periodically for a certain
+       time,  but  then  expire.  For example, suppose you have a
+       class every Friday, and that your  last  class  is  on  11
+       December 1992.  You can use:
+
+            REM Fri UNTIL 11 Dec 1992 MSG Class today.
+
+       Another  example:   Suppose  you  have  jury  duty from 30
+       November  1992  until  4  December  1992.   The  following
+       reminder  will  issue  the  message every day of your jury
+       duty, as well as 2 days ahead of time:
+
+            REM 30 Nov 1992 *1 +2 UNTIL 4 Dec 1992 MSG Jury duty
+
+       Note that the _r_e_p_e_a_t of *1 is necessary; without  it,  the
+       reminder  would be issued only on 30 November (and the two
+       days preceding.)
+
+       TTHHEE OONNCCEE KKEEYYWWOORRDD
+
+       Sometimes, it is necessary to ensure  that  reminders  are
+       run  only once on a given day.  For example, if you have a
+       reminder which makes a backup of your files every Friday:
+
+            REM Fri RUN do_backup
+
+       (Here, _d_o___b_a_c_k_u_p is assumed  to  be  a  program  or  shell
+       script  which does the work.)  If you run RReemmiinndd from your
+       .login script, for example, and log in several  times  per
+       day,  the  _d_o___b_a_c_k_u_p program will be run each time you log
+       in.   If,  however,  you  use  the  OONNCCEE  keyword  in  the
+       reminder,  the  RReemmiinndd  checks the last access date of the
+       reminder script.  If it is the same as the  current  date,
+       RReemmiinndd  assumes that it has already been run, and will not
+       issue reminders containing the OONNCCEE keyword.
+
+       Note that if you view or edit your  reminder  script,  the
+
+
+
+                         13 October 1993                       10
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+       last  access  date  will  be updated, and the OONNCCEE keyword
+       will not operate properly.  If you start RReemmiinndd  with  the
+       --oo option, then the OONNCCEE keyword will be ignored.
+
+       LLOOCCAALLLLYY OOMMIITTTTIINNGG WWEEEEKKDDAAYYSS
+
+       The OOMMIITT portion of the RREEMM command is used to "omit" cer-
+       tain days when counting the _d_e_l_t_a or _b_a_c_k.  It  is  speci-
+       fied  using  the  keyword OOMMIITT followed by a list of week-
+       days.  Its action is best illustrated with examples:
+
+            REM 1 +1 OMIT Sat Sun MSG Important Event
+
+       This reminder is normally triggered on the first of  every
+       month,  as  well as the day preceding it.  However, if the
+       first of the month falls on a Sunday or Monday,  then  the
+       reminder  is  triggered starting from the previous Friday.
+       This is because the _d_e_l_t_a of +1 does not count Saturday or
+       Sunday  when  it counts backwards from the trigger date to
+       determine how much advance warning to give.
+
+       Contrast this with the use of "++1" in the above  command.
+       In  this  case,  the reminder is triggered on the first of
+       each month, as well as the day preceding it.  The  omitted
+       days are counted.
+
+            REM 1 -1 OMIT Sat Sun MSG Last working day of month
+
+       Again,  in  the  above  example,  the  _b_a_c_k of -1 normally
+       causes the trigger date to be the last day of  the  month.
+       However,  because  of the OOMMIITT clause, if the first of the
+       month falls on a Sunday or Monday,  the  trigger  date  is
+       moved  backwards past the weekend to Friday.  (If you have
+       globally omitted holidays, the reminder will be moved back
+       past   them,  also.   See  "The  OMIT  command"  for  more
+       details.)
+
+       By comparison, if we had used "--1", the reminder would be
+       triggered  on the last day of the month, regardless of the
+       OOMMIITT.
+
+       TTIIMMEEDD RREEMMIINNDDEERRSS
+
+       Timed reminders are those which have an  AATT  keyword  fol-
+       lowed by a _t_i_m_e and optional _t_d_e_l_t_a and _t_r_e_p_e_a_t.  The _t_i_m_e
+       must be specified in 24-hour format, with 0:00  represent-
+       ing  midnight,  12:00  representing noon, and 23:59 repre-
+       senting one minute to midnight.   You  can  use  either  a
+       colon  or a period to separate the hours from the minutes.
+       That is, 13:39 and 13.39 are equivalent.
+
+       RReemmiinndd treats timed reminders specially.  If  the  trigger
+       date  for a timed reminder is the same as the current sys-
+       tem date, the reminder is  queued  for  later  activation.
+
+
+
+                         13 October 1993                       11
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+       When  RReemmiinndd has finished processing the reminder file, it
+       puts  itself  in  the  background,  and  activates   timed
+       reminders when the system time reached the specified time.
+
+       If the trigger date is _n_o_t the same as  the  system  date,
+       the reminder is not queued.
+
+       For example, the following reminder, triggered every work-
+       ing day, will emit a  message  telling  you  to  leave  at
+       5:00pm:
+
+            REM Mon Tue Wed Thu Fri AT 17:00 MSG Time to leave!
+
+       The  following reminder will be triggered on Thursdays and
+       Fridays, but will only be queued on Fridays:
+
+            REM Fri ++1 AT 13:00 MSG Lunch at 1pm Friday.
+
+       The _t_d_e_l_t_a and _t_r_e_p_e_a_t have the same form as a _r_e_p_e_a_t  and
+       _d_e_l_t_a,  but  are  specified in minutes.  For example, this
+       reminder will be triggered at 12:00pm as well as  45  min-
+       utes before:
+
+            REM AT 12:00 +45 MSG Example
+
+       The following will be issued starting at 10:45, every half
+       hour until 11:45, and again at noon.
+
+            REM AT 12:00 +75 *30 MSG Example2
+
+       The "+75" means that the reminder is  issued  starting  75
+       minutes  before  noon;  in other words, at 10:45.  The *30
+       specifies that the reminder is subsequently to  be  issued
+       every 30 minutes.  Note that the reminder is always issued
+       at the specified time, even if the _t_d_e_l_t_a is not a  multi-
+       ple  of  the  _t_r_e_p_e_a_t.   So the above example is issued at
+       10:45am, 11:15am, 11:45am, and 12:00pm.  Note that in  the
+       time  specification,  there  is no distinction between the
+       "+" and "++" forms of _t_d_e_l_t_a.
+
+       Normally, RReemmiinndd will issue timed  reminders  as  it  pro-
+       cesses  the  reminder  script, as well as queuing them for
+       later.  If you do not want RReemmiinndd to issue  the  reminders
+       when  processing  the  script,  but only to queue them for
+       later, use the --aa command-line option.  If you do not want
+       reminders  to be queued for later, use the --qq command-line
+       option.
+
+       Normally, RReemmiinndd forks  a  background  process  to  handle
+       queued  reminders.   If  you  want RReemmiinndd to remain in the
+       foreground, use the --ff command-line option.  This is  use-
+       ful,  for  example, in .xinitrc scripts, where you can use
+       the command:
+
+
+
+
+                         13 October 1993                       12
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+            remind -fa myreminders &
+
+       This ensures that when you exit X-Windows, the RReemmiinndd pro-
+       cess is killed.
+
+       WWAARRNNIINNGG AABBOOUUTT TTIIMMEEDD RREEMMIINNDDEERRSS
+
+       Note:   If  you  use  user-defined  functions or variables
+       (described later) in the bodies of timed  reminders,  then
+       when  the timed reminders are activated, the variables and
+       functions have the definitions which were in effect at the
+       end  of  the  reminder  script.  These definitions may _n_o_t
+       necessarily be those which were in effect at the time  the
+       reminder was queued.
+
+       TTHHEE SSCCHHEEDD KKEEYYWWOORRDD
+
+       The  SSCCHHEEDD  keyword  allows  more precise control over the
+       triggering of timed reminders.  However,  discussion  must
+       be deferred until after expressions and user-defined func-
+       tions are explained.  See the subsection "Precise Schedul-
+       ing" further on.
+
+
+TTHHEE SSUUBBSSTTIITTUUTTIIOONN FFIILLTTEERR
+       Before  being  processed,  the  body  of  a RREEMM command is
+       passed through a substitution filter.   The  filter  scans
+       for  sequences  "%x"  (where "x" is any letter and certain
+       other characters)  and  performs  substitutions  as  shown
+       below.   (All  dates  refer  to  the  trigger  date of the
+       reminder.)
+
+       %%aa     is replaced with "on _w_e_e_k_d_a_y_, _d_a_y _m_o_n_t_h_, _y_e_a_r"
+              For example, consider the reminder:
+
+              REM 18 Oct 1990 +4 MSG Meeting with Bob %a.
+
+              On 16 October 1990, it would  print  "Meeting  with
+              Bob on Thursday, 18 October, 1990."
+
+              On  17  October  1990, it would print "Meeting with
+              Bob tomorrow."
+
+              On 18 October 1990, it would  print  "Meeting  with
+              Bob today."
+
+       %%bb     is replaced with "in _d_i_f_f day's time" where _d_i_f_f is
+              the aaccttuuaall number of days between the current  date
+              and the trigger date.  (OOMMIITTss have no effect.)
+              For example, consider:
+
+              REM 18 Oct 1990 +4 MSG Meeting with Bob %b.
+
+              On  16  October  1990, it would print "Meeting with
+
+
+
+                         13 October 1993                       13
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+              Bob in 2 days' time."
+
+              On 17 October 1990, it would  print  "Meeting  with
+              Bob tomorrow."
+
+              On  18  October  1990, it would print "Meeting with
+              Bob today."
+
+       %%cc     is replaced with "on _w_e_e_k_d_a_y"
+              Example: REM 18 Oct 1990 +4 MSG  Meeting  with  Bob
+              %c.
+
+              On  16  October  1990, it would print "Meeting with
+              Bob on Thursday."
+
+              On 17 October 1990, it would  print  "Meeting  with
+              Bob tomorrow."
+
+              On  18  October  1990, it would print "Meeting with
+              Bob today."
+
+       %%dd     is replaced with "_d_a_y", the day of the month.
+
+       %%ee     is replaced with "on _d_d_/_m_m_/_y_y_y_y"
+
+       %%ff     is replaced with "on _m_m_/_d_d_/_y_y_y_y"
+
+       %%gg     is replaced with "on _w_e_e_k_d_a_y_, _d_a_y _m_o_n_t_h"
+
+       %%hh     is replaced with "on _d_d_/_m_m"
+
+       %%ii     is replaced with "on _m_m_/_d_d"
+
+       %%jj     is replaced with "on _w_e_e_k_d_a_y_, _m_o_n_t_h  _d_a_y_-_t_h_,  _y_e_a_r"
+              This  form  appends the characters "st", "nd", "rd"
+              or "th" to the day of the month, as appropriate.
+
+       %%kk     is replaced with "on _w_e_e_k_d_a_y_, _m_o_n_t_h _d_a_y_-_t_h"
+
+       %%ll     is replaced with "on _y_y_y_y_/_m_m_/_d_d"
+
+       %%mm     is replaced with "_m_o_n_t_h", the name of the month.
+
+       %%nn     is replaced with the number (1 to 12) of the month.
+
+       %%oo     is replaced with " (today)" if and only if the cur-
+              rent system date is the same as the date being used
+              by RReemmiinndd as the current date.  Recall that you can
+              specify a date for RReemmiinndd to  use  on  the  command
+              line.  This substitution is not generally useful in
+              a RREEMM command, but is useful in a  BBAANNNNEERR  command.
+              (See "The BANNER Command.")
+
+       %%pp     is  replaced  with  "s"  if  the  _d_i_f_f  between the
+
+
+
+                         13 October 1993                       14
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+              current date and the trigger date is  not  1.   You
+              can use this to construct reminders like:
+              REM 1 Jan +4 MSG %x day%p to go before New Year!
+
+       %%qq     is replaced with "'s" if the _d_i_f_f between the trig-
+              ger date and the current date is 1.  Otherwise,  it
+              is replaced with "s'"  This can be used as follows:
+              REM 1 Jan +4 MSG New Year in %x day%q time!
+
+       %%rr     is replaced with the day of the month  (01  to  31)
+              padded  with a leading zero if needed to pad to two
+              digits.
+
+       %%ss     is replaced with "st", "nd", "rd" or "th" depending
+              on the day of the month.
+
+       %%tt     is replaced with the number of the month (01 to 12)
+              padded to two digits with a leading zero.
+
+       %%uu     is replaced with "on _w_e_e_k_d_a_y_, _d_a_y_-_t_h  _m_o_n_t_h_,  _y_e_a_r"
+              This  is similar to %%aa except that "st", "nd", "rd"
+              or "th" is added to the _d_a_y as appropriate.
+
+       %%vv     is replaced with "on _w_e_e_k_d_a_y_, _d_a_y_-_t_h _m_o_n_t_h"
+
+       %%ww     is replaced with "_w_e_e_k_d_a_y", the name of the day  of
+              the week.
+
+       %%xx     is  replaced with the _d_i_f_f between the current date
+              and the trigger date.  The _d_i_f_f is defined  as  the
+              actual  number  of  days  between  these two dates;
+              OOMMIITTss are not counted.  (Strict date subtraction is
+              performed.)
+
+       %%yy     is  replaced  with  "_y_e_a_r", the year of the trigger
+              date.
+
+       %%zz     is replaced with "_y_y", the last two digits  of  the
+              year.
+
+       %%__     (percent-underscore)  is  replaced  with a newline.
+              You can use this to achieve multi-line reminders.
+
+       %%11     is replaced with "now", "_m minutes  from  now",  "_m
+              minutes ago", "_h hours from now", "_h hours ago", "_h
+              hours and _m minutes from now" or  "_h  hours  and  _m
+              minutes  ago", as appropriate for a timed reminder.
+              Note that unless you specify the --aa  option,  timed
+              reminders  will be triggered like normal reminders,
+              and thus a timed reminder which occurred earlier in
+              the day may be triggered.  This causes the need for
+              the "...ago" forms.
+
+       %%22     is replaced with "at _h_h:_m_mam" or  "..pm"  depending
+
+
+
+                         13 October 1993                       15
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+              on the AATT time of the reminder.
+
+       %%33     is replaced with "at _h_h:_m_m" in 24-hour format.
+
+       %%44     is  replaced  with  "_m_m"  where _m_m is the number of
+              minutes between "now" and the time specified by AATT.
+              If  the  AATT  time is earlier than the current time,
+              then the result is negative.
+
+       %%55     is replaced with "_m_a"  where  _m_a  is  the  absolute
+              value of the number produced by %%44.
+
+       %%66     is  replaced with "ago" or "from now", depending on
+              the relationship between the AATT time and  the  cur-
+              rent time.
+
+       %%77     is replaced with the number of hours between the AATT
+              time and the  current  time.   It  is  always  non-
+              negative.
+
+       %%88     is  replaced with the number of minutes between the
+              AATT time and the current time, after the hours  (%%77)
+              have been subtracted out.  This is a number ranging
+              from 0 to 59.
+
+       %%99     is replaced with "s" if the value produced by %%88 is
+              not 1.
+
+       %%00     is replaced with "s" if the value produced by %%77 is
+              not 1.
+
+       %%!!     is replaced with "is" if the current time is before
+              the AATT time, or "was" if it is after.
+
+       %%@@     is similar to %%22 but displays the current time.
+
+       %%##     is similar to %%33 but displays the current time.
+
+       %%""     (percent-doublequote) is removed.  This sequence is
+              not used by the substitution filter, but is used to
+              tell  RReemmiinndd  which  text  to include in a calendar
+              entry when the --cc, --ss or --pp option is chosen.   See
+              "Calendar Mode"
+
+       Notes:
+
+       o      RReemmiinndd  normally  prints  a  blank  line after each
+              reminder; if the last character of the body is "%",
+              the blank line will not be printed.
+
+       o      Substitutions  a,  b,  c, e, f, g, h, i, j, k, l, u
+              and v all are replaced with "today" if the  current
+              date  equals the trigger date, or "tomorrow" if the
+              trigger date is one day  after  the  current  date.
+
+
+
+                         13 October 1993                       16
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+              Thus,  they are nnoott the same as substitutions built
+              up from the simpler %w, %y, etc.  sequences.
+
+       o      Any of  the  substitutions  dealing  with  time  (0
+              through  9  and  '!')  produce undefined results if
+              used in a reminder which does not have an  AATT  key-
+              word.   Also,  if a reminder has a _d_e_l_t_a and may be
+              triggered on several days, the  time  substitutions
+              ignore  the  date.   Thus,  the %%11 substitution may
+              report that a meeting is in 15 minutes,  for  exam-
+              ple,  even  though  it  may only be in 2 days time,
+              because a _d_e_l_t_a has triggered the reminder.  It  is
+              recommended  that  you  use  the time substitutions
+              only in timed reminders with  no  _d_e_l_t_a  which  are
+              designed to be queued for timed activation.
+
+       o      Capital  letters  can  be  used in the substitution
+              sequence, in which case the first character of  the
+              substituted  string  is  capitalized (if it is nor-
+              mally a lower-case letter.)
+
+       o      All other characters following a "%" sign are  sim-
+              ply  copied.  In particular, to get a "%" sign out,
+              use "%%" in the body.   To  start  the  body  of  a
+              reminder  with a space, use "% ", since RReemmiinndd nor-
+              mally scans for the first non-space character after
+              a MMSSGG,, CCAALL or RRUUNN token.
+
+TTHHEE OOMMIITT CCOOMMMMAANNDD
+       In addition to being a keyword in the RREEMM command, OOMMIITT is
+       a command in its own right.  Its syntax is:
+
+              OOMMIITT _d_a_y _m_o_n_t_h [_y_e_a_r]
+
+       The OOMMIITT command is used to "globally" omit certain  days,
+       which  are  usually holidays.  These globally-omitted days
+       are skipped by the "-" and "+" forms of  _b_a_c_k  and  _d_e_l_t_a.
+       Some examples:
+
+            OMIT 1 Jan
+            OMIT 7 Sep 1992
+
+       The  first example specifies a holiday which occurs on the
+       same date each year - New Year's Day.  The second  example
+       specifies  a holiday which changes each year - Labour Day.
+       For these types of holidays, you must create an OOMMIITT  com-
+       mand for each year.  (Later, in the description of expres-
+       sions and some of the more advanced  features  of  RReemmiinndd,
+       you will see how to automate this for some cases.)
+
+       For  convenience,  you can use a _d_e_l_t_a and MMSSGG or RRUUNN key-
+       word in the OOMMIITT command.   The  following  sequences  are
+       exactly equivalent:
+
+
+
+
+                         13 October 1993                       17
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+            OMIT 1 Jan
+            REM 1 Jan +4 MSG New year's day is %b!
+
+            and
+
+            OMIT 1 Jan +4 MSG New year's day is %b!
+
+       TTHHEE BBEEFFOORREE,, AAFFTTEERR AANNDD SSKKIIPP KKEEYYWWOORRDDSS
+
+       Normally, days which are omitted, whether by a global OOMMIITT
+       command or the local OOMMIITT keyword in a RREEMM statement, only
+       affect the counting of the -_b_a_c_k or the +_d_e_l_t_a.  For exam-
+       ple, suppose you have a meeting every Wednesday.  Suppose,
+       too, that you have indicated 11 Nov as a holiday:
+
+            OMIT 11 Nov +4 MSG Remembrance Day
+            REM Wed +1 MSG Code meeting %b.
+
+       The  above  sequence will issue a reminder about a meeting
+       for 11 November 1992, which is a Wednesday.  This is prob-
+       ably incorrect.  There are three options:
+
+       BBEEFFOORREE This keyword moves the reminder to before any omit-
+              ted days.  Thus,  in  the  above  example,  use  of
+              BBEEFFOORREE would cause the meeting reminder to be trig-
+              gered on Tuesday, 10 November 1992.
+
+       AAFFTTEERR  This keyword moves the reminder to after any  omit-
+              ted  days.   In  the  above  example,  the  meeting
+              reminder would be triggered on Thursday, 12  Novem-
+              ber 1992.
+
+       SSKKIIPP   This keyword causes the reminder to be skipped com-
+              pletely on any omitted days.  Thus,  in  the  above
+              example,  the reminder would not be triggered on 11
+              November 1992.  However, it would be  triggered  as
+              usual on the following Wednesday, 18 November 1992.
+
+       The BBEEFFOORREE and AAFFTTEERR keywords move the trigger date  of  a
+       reminder  to  before  or  after  a  block of omitted days,
+       respectively.  Suppose you normally run a  backup  on  the
+       first  day of the month.  However, if the first day of the
+       month is a weekend or holiday, you run the backup  on  the
+       first  working  day following the weekend or holiday.  You
+       could use:
+
+            REM 1 OMIT Sat Sun AFTER RUN do_backup
+
+       Let's examine how the trigger date  is  computed.   The  11
+       specifies the first day of the month.  The local OOMMIITT key-
+       word causes the AAFFTTEERR keyword to move the reminder forward
+       past  weekends.  Finally, the AAFFTTEERR keyword will keep mov-
+       ing the reminder forward until it has passed any  holidays
+       specified with global OOMMIITT commands.
+
+
+
+                         13 October 1993                       18
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+TTHHEE IINNCCLLUUDDEE CCOOMMMMAANNDD
+       RReemmiinndd  allows you to include other files in your reminder
+       script, similar to the C preprocessor #include  directive.
+       For example, your system administrator may maintain a file
+       of holidays or system-wide  reminders.   You  can  include
+       these in your reminder script as follows:
+
+            INCLUDE /usr/share/remind/holidays
+            INCLUDE /usr/share/remind/reminders
+
+       (The  actual  pathnames  vary  from system to system - ask
+       your system administrator.)
+
+       IINNCCLLUUDDEE files can be nested up to a depth of 8.
+
+       If you specify a filename of "-" in the  IINNCCLLUUDDEE  command,
+       RReemmiinndd will begin reading from standard input.
+
+TTHHEE RRUUNN CCOOMMMMAANNDD
+       If  you  include  other files in your reminder script, you
+       may not always entirely "trust" the contents of the  other
+       files.   For  example, they may contain RRUUNN-type reminders
+       which could be used to access your files or perform  unde-
+       sired actions.  The RRUUNN command can restrict this:  If you
+       include the command RRUUNN OOFFFF  in  your  top-level  reminder
+       script,  any  reminder  or expression which would normally
+       execute a system command is disabled.   RRUUNN  OONN  will  re-
+       enable  the  execution  of system commands.  Note that the
+       RRUUNN OONN command can _o_n_l_y be used in your top-level reminder
+       script;  it  will  _n_o_t  work  in any files accessed by the
+       IINNCCLLUUDDEE command.  This is  to  protect  you  from  someone
+       placing  a  RRUUNN  OONN command in an included file.  However,
+       the RRUUNN OOFFFF command can be used at  top  level  or  in  an
+       included file.
+
+       If  you  run  RReemmiinndd with the --rr command-line option, RRUUNN-
+       type reminders and the sshheellll(()) function will be  disabled,
+       regardless  of  any  RRUUNN  commands in the reminder script.
+       However, any command supplied  with  the  --kk  option  will
+       still be executed.
+
+       One  use  of the RRUUNN command is to provide a secure inter-
+       face between RReemmiinndd and the EEllmm mail system.  The EEllmm sys-
+       tem  can  automatically scan incoming mail for reminder or
+       calendar entries, and place them in  your  calendar  file.
+       To  use this feature, you should set the calendar filename
+       option under EEllmm to be something  like  "~/.reminders.in",
+       _n_o_t  your  main reminder file!  This is so that any RRUUNN OONN
+       commands mailed to you can never be activated.
+
+       Then, you can  use  the  EEllmm  _s_c_a_n  _m_e_s_s_a_g_e  _f_o_r  _c_a_l_e_n_d_a_r
+       _e_n_t_r_i_e_s  command  to place reminders prefaced by "->" into
+       .reminders.in.  In your main .reminders file, include  the
+       following lines:
+
+
+
+                         13 October 1993                       19
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+            RUN OFF   # Disable RUN
+            INCLUDE .reminders.in
+            RUN ON    # Re-enable RUN
+
+
+TTHHEE BBAANNNNEERR CCOOMMMMAANNDD
+       When  RReemmiinndd  first issues a reminder, it prints a message
+       like this:
+
+            Reminders for Friday, 30th October, 1992 (today):
+
+       (The banner  is  not  printed  if  any  of  the  calendar-
+       producing options is used, or if the --kk option is used.)
+
+       The  BBAANNNNEERR command lets you change the format.  It should
+       appear before any RREEMM commands.  The format is:
+
+              BBAANNNNEERR _f_o_r_m_a_t
+
+       The _f_o_r_m_a_t is similar to the _b_o_d_y of a RREEMM command.  It is
+       passed  through  the substitution filter, with an implicit
+       trigger of the current system  date.   Thus,  the  default
+       banner is equivalent to:
+
+            BANNER Reminders for %w, %d%s %m, %y%o:
+
+       You  can  disable the banner completely with BANNER %.  Or
+       you can create a custom banner:
+
+            BANNER Hi - here are your reminders for %y/%t/%r:
+
+CCOONNTTRROOLLLLIINNGG TTHHEE OOMMIITT CCOONNTTEEXXTT
+       Sometimes, it  is  necessary  to  temporarily  change  the
+       global  OOMMIITTss  which  are  in  force  for a few reminders.
+       Three commands allow you to do this:
+
+       PPUUSSHH--OOMMIITT--CCOONNTTEEXXTT
+              This command saves the current global OOMMIITTss  on  an
+              internal stack.
+
+       CCLLEEAARR--OOMMIITT--CCOONNTTEEXXTT
+              This command clears all of the global OOMMIITTss, start-
+              ing you off with a "clean slate."
+
+       PPOOPP--OOMMIITT--CCOONNTTEEXXTT
+              This command restores the global OOMMIITTss  which  were
+              saved by the most recent PPUUSSHH--OOMMIITT--CCOONNTTEEXXTT.
+
+       For  example,  suppose you have a block of reminders which
+       require a clear OOMMIITT context, and that they also introduce
+       unwanted  global  OOMMIITTss  which  could interfere with later
+       reminders.  You could use the following fragment:
+
+            PUSH-OMIT-CONTEXT   # Save the current context
+
+
+
+                         13 October 1993                       20
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+            CLEAR-OMIT-CONTEXT  # Clean the slate
+            # Block of reminders goes here
+            POP-OMIT-CONTEXT    # Restore the saved omit context
+
+EEXXPPRREESSSSIIOONNSS
+       In certain contexts, to be described  later,  RReemmiinndd  will
+       accept  expressions  for  evaluation.   RReemmiinndd expressions
+       resemble C expressions, but operate on different types  of
+       objects.
+
+       DDAATTAA TTYYPPEESS
+
+       RReemmiinndd expressions understand four types of objects:
+
+       IINNTT    The  IINNTT  data type consists of the integers repre-
+              sentable in one machine word.  The  IINNTT  data  type
+              corresponds to the C "int" type.
+
+       SSTTRRIINNGG The SSTTRRIINNGG data type consists of strings of charac-
+              ters.  It is somewhat comparable to a  C  character
+              array,  but  more closely resembles the string type
+              in BASIC.
+
+       TTIIMMEE   The TTIIMMEE data type consists of times  of  the  day.
+              The TTIIMMEE data type is internally stored as an inte-
+              ger representing the number of minutes  since  mid-
+              night.
+
+       DDAATTEE   The  DDAATTEE data type consists of dates (later than 1
+              January 1990.)  Internally, DDAATTEE objects are stored
+              as the number of days since 1 January 1990.
+
+       CCOONNSSTTAANNTTSS
+
+       The  following  examples  illustrate  constants  in RReemmiinndd
+       expressions:
+
+       IINNTT ccoonnssttaannttss
+              12, 36, -10, 0, 1209
+
+       SSTTRRIINNGG ccoonnssttaannttss
+              "Hello there", "This is a test", "\n\gosd\w", ""
+
+              Note that the empty string is  represented  by  "",
+              and  that  backslashes  in  a string are _n_o_t inter-
+              preted specially, as in they are in C.
+
+       TTIIMMEE ccoonnssttaannttss
+              12:33, 0:01, 14:15, 16:42, 12.16, 13.00, 1.11
+
+              Note that TTIIMMEE constants  are  written  in  24-hour
+              format.   Either the period or colon can be used to
+              separate the  minutes  from  the  hours.   However,
+              Remind  will  consistently  output times using only
+
+
+
+                         13 October 1993                       21
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+              one separator  character.   (The  output  separator
+              character is chosen at compile-time.)
+
+       DDAATTEE ccoonnssttaannttss
+              DDAATTEE  constants  are  expressed  as 'yyyy/mm/dd' or
+              'yyyy-mm-dd', and the single quotes  _m_u_s_t  be  sup-
+              plied.   This  distinguishes  date  constants  from
+              division or subtraction of integers.  Examples:
+
+              '1993/02/22', '1992-12-25', '1999/01/01'
+
+              Note that DDAATTEE constants are  _p_r_i_n_t_e_d  without  the
+              quotes.   Although either '-' or '/' is accepted as
+              a date separator on input, when dates are  printed,
+              only  one  will  be used.  The choice of whether to
+              use '-' or '/' is made at compile-time.  Note  also
+              that  versions  of RReemmiinndd prior to 03.00.01 did not
+              support date constants.   In  those  versions,  you
+              must create dates using the ddaattee(()) function.  Also,
+              versions prior to 03.00.02 did not support the  '-'
+              date separator.
+
+       OOPPEERRAATTOORRSS
+
+       RReemmiinndd has the following operators.  Operators on the same
+       line have equal precedence, while operators on lower lines
+       have  lower  precedence  than  those on higher lines.  The
+       operators approximately correspond to C operators.
+
+            !  -     (unary logical negation and arithmetic negation)
+            *  /  %
+            +  -
+            <  <=  >  >=
+            ==  !=
+            &&
+            ||
+
+       DDEESSCCRRIIPPTTIIOONN OOFF OOPPEERRAATTOORRSS
+
+
+       !!      Logical negation.  Can be applied to an  IINNTT  type.
+              If  the  operand is non-zero, returns zero.  Other-
+              wise, returns 1.
+
+       --      Unary minus.  Can be applied to  an  IINNTT.   Returns
+              the negative of the operand.
+
+       **      Multiplication.  Returns the product of two IINNTTs.
+
+       //      Integer  division.   Returns  the  quotient  of two
+              IINNTTs, discarding the remainder.
+
+       %%      Modulus.  Returns the remainder upon  dividing  one
+              IINNTT by another.
+
+
+
+                         13 October 1993                       22
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+       ++      Has several uses.  These are:
+
+              IINNTT + IINNTT - returns the sum of two IINNTTs.
+
+              IINNTT  + TTIIMMEE or TTIIMMEE + IINNTT - returns a TTIIMMEE obtained
+              by adding IINNTT minutes to the original TTIIMMEE.
+
+              IINNTT + DDAATTEE or DDAATTEE + IINNTT - returns a DDAATTEE  obtained
+              by adding IINNTT days to the original DDAATTEE.
+
+              SSTTRRIINNGG  +  SSTTRRIINNGG  -  returns a SSTTRRIINNGG which is the
+              concatenation of the two original SSTTRRIINNGGs.
+
+              SSTTRRIINNGG + anything or anything + SSTTRRIINNGG  -  converts
+              the  non-SSTTRRIINNGG argument to a SSTTRRIINNGG, and then per-
+              forms concatenation.  See the ccooeerrccee(()) function.
+
+       --      Has several uses.  These are:
+
+              IINNTT - IINNTT - returns the difference of two IINNTTs.
+
+              DDAATTEE - DDAATTEE - returns (as an IINNTT) the difference in
+              days between two DDAATTEEs.
+
+              TTIIMMEE - TTIIMMEE - returns (as an IINNTT) the difference in
+              minutes between two TTIIMMEEs.
+
+              DDAATTEE - IINNTT - returns a DDAATTEE which is IINNTT days  ear-
+              lier than the original DDAATTEE.
+
+              TTIIMMEE  -  IINNTT  - returns a TTIIMMEE which is IINNTT minutes
+              earlier than the original TTIIMMEE.
+
+       <<,, <<==,, >>,, aanndd >>==
+              These are the comparison operators.  They can  take
+              operands  of any type, but both operands must be of
+              the same type.  The comparison operators  return  1
+              if  the  comparison  is  true, or 0 if it is false.
+              Note that string comparison is done  following  the
+              lexical  ordering of characters on your system, and
+              that upper and lower case _a_r_e  distinct  for  these
+              operators.
+
+       ====,, !!== ==  tests for equality, returning 1 if its operands
+              are equal, and 0 if they are  not.   !=  tests  for
+              inequality.
+
+              If  the  operands  are  not  of  the  same type, ==
+              returns 0 and != returns 1.  Again, string  compar-
+              isons are case-sensitive.
+
+       &&&&     This  is  the  logical  AND  operator.  Both of its
+              operands must be of type IINNTT.  It returns 1 if both
+              operands are non-zero, and 0 otherwise.
+
+
+
+                         13 October 1993                       23
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+       ||||     This  is  the  logical  OR  operator.   Both of its
+              operands must be of type  IINNTT.   It  returns  1  if
+              either operand is non-zero, and 0 otherwise.
+
+       NNOOTTEESS
+
+       Operators  of  equal  precedence are _a_l_w_a_y_s evaluated from
+       left to right, except where parentheses dictate otherwise.
+       This is important, because the enhanced "+" and "-" opera-
+       tors are not necessarily associative.  For example:
+
+            1 + 2 + "string" + 3 + 4  yields "3string34"
+            1 + (2 + "string") + (3 + 4)  yields "12string7"
+            12:59 + 1 + "test"  yields "13:00test"
+            12:59 + (1 + "test")  yields "12:591test"
+
+       The logical  operators  are  _n_o_t  so-called  short-circuit
+       operators,  as  they  are  in C.  Both operands are always
+       evaluated.  Thus, an expression such as:
+
+            (f!=0) && (100/f <= 3)
+
+       will cause an error if f is zero.
+
+       VVAARRIIAABBLLEESS
+
+       RReemmiinndd allows you to assign values to variables.  The  SSEETT
+       command is used as follows:
+
+       SSEETT _v_a_r _e_x_p_r
+
+       _V_a_r  is the name of a variable.  It must start with a let-
+       ter or underscore, and consist only of letters, digits and
+       underscores.   Only  the first 12 characters of a variable
+       name are significant.  Variable names are _n_o_t case  sensi-
+       tive;  thus,  "Afoo"  and  "afOo"  are  the same variable.
+       Examples:
+
+            SET a 10 + (9*8)
+            SET b "This is a test"
+            SET mydir getenv("HOME")
+            SET time 12:15
+            SET date today()
+
+       Note that variables themselves have no type.  They take on
+       the type of whatever you store in them.
+
+       To delete a variable, use the UUNNSSEETT command:
+
+       UUNNSSEETT _v_a_r [_v_a_r...]
+
+       For  example,  to delete all the variables declared above,
+       use:
+
+
+
+
+                         13 October 1993                       24
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+            UNSET a b mydir time date
+
+       SSYYSSTTEEMM VVAARRIIAABBLLEESS
+
+       In addition to the regular user variables, RReemmiinndd has sev-
+       eral "system variables" which are used to query or control
+       the operating  state  of  RReemmiinndd.   System  variables  are
+       available starting from version 03.00.07 of RReemmiinndd.
+
+       All  system  variables begin with a dollar sign '$'.  They
+       can be used in SSEETT commands and expressions just as  regu-
+       lar  variables can.  All system variables always hold val-
+       ues of a specified type.  In addition, some  system  vari-
+       ables cannot be modified, and you cannot create new system
+       variables.  System variables can  be  initialized  on  the
+       command line with the --ii option, but you may need to quote
+       them to avoid having the shell interpret the dollar  sign.
+       System variable names are not case-sensitive.
+
+       The  following system variables are defined.  Those marked
+       "read-only" cannot be changed with the SSEETT  command.   All
+       system variables hold values of type IINNTT, unless otherwise
+       specified.
+
+       $$CCaallccUUTTCC
+              If 1 (the default),  then  RReemmiinndd  uses  C  library
+              functions   to  calculate  the  number  of  minutes
+              between local and Universal Time Coordinated.  This
+              affects  astronomical  calculations  (ssuunnrriissee(()) for
+              example.)  If 0, then you must supply the number of
+              minutes  between  local  and Universal Time Coordi-
+              nated in the $$MMiinnssFFrroommUUTTCC system variable.
+
+       $$CCaallMMooddee ((rreeaadd--oonnllyy))
+              If non-zero, then the --cc option was supplied on the
+              command line.
+
+       $$DDaaeemmoonn ((rreeaadd--oonnllyy))
+              If  the  daemon  mode  --zz was invoked, contains the
+              number of minutes between wakeups.  If not  running
+              in  daemon  mode,  contains 0.  For the MS-DOS ver-
+              sion, always contains 0.
+
+       $$DDoonnttFFoorrkk ((rreeaadd--oonnllyy))
+              If non-zero, then the --cc option was supplied on the
+              command  line.  For the MS-DOS version, always con-
+              tains 1.
+
+       $$DDoonnttTTrriiggAAttss ((rreeaadd--oonnllyy))
+              If non-zero, then the --aa option was supplied on the
+              command  line.  For the MS-DOS version, always con-
+              tains 0.
+
+
+
+
+
+                         13 October 1993                       25
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+       $$DDoonnttQQuueeuuee ((rreeaadd--oonnllyy))
+              If non-zero, then the --qq option was supplied on the
+              command  line.  For the MS-DOS version, always con-
+              tains 1.
+
+       $$EEnnddSSeenntt ((SSTTRRIINNGG ttyyppee))
+              Contains a list of characters which end a sentence.
+              The  MMSSFF  keyword  inserts  two  spaces after these
+              characters.  Initially, $$EEnnddSSeenntt is  set  to  ".!?"
+              (period, exclamation mark, and question mark.)
+
+       $$EEnnddSSeennttIIgg ((SSTTRRIINNGG ttyyppee))
+              Contains  a  list  of  characters  which  should be
+              ignored when MMSSFF decides whether or  not  to  place
+              two  spaces after a sentence.  Initially, is set to
+              "'>)]}"+CHAR(34) (single-quote, greater-than, right
+              parenthesis,  right  bracket, right brace, and dou-
+              ble-quote.)
+
+              For example, the default values work as follows:
+
+                   MSF He said, "Huh! (Two spaces will follow this.)"  Yup.
+
+              because the final parenthesis and quote are ignored
+              (for  the  purposes  of spacing) when they follow a
+              period.
+
+       $$FFiirrssttIInnddeenntt
+              The number of spaces by which to indent  the  first
+              line of a MMSSFF-type reminder.  The default is 0.
+
+       $$FFoollddYYeeaarr
+              The standard Unix library functions may have diffi-
+              culty dealing with dates later than 2037.  If  this
+              variable  is  set  to  1, then the UTC calculations
+              "fold back" years later than 2037 before using  the
+              Unix  library  functions.  For example, to find out
+              whether or not daylight savings time is  in  effect
+              in  June,  2077, the year is "folded back" to 2010,
+              because both years begin on a Monday, and both  are
+              non-leapyears.  The rules for daylight savings time
+              are thus presumed to be identical for  both  years,
+              and the Unix library functions can handle 2010.  By
+              default, this variable is 0.  Set it to  1  if  the
+              sun  or  UTC  functions misbehave for years greater
+              than 2037.
+
+       $$FFoorrmmWWiiddtthh
+              The maximum width of each line of text for  format-
+              ting MMSSFF-type reminders.  The default is 72.  If an
+              MMSSFF-type reminder contains a word too long  to  fit
+              in this width, it will not be truncated - the width
+              limit will be ignored.
+
+
+
+
+                         13 October 1993                       26
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+       $$HHuusshhMMooddee ((rreeaadd--oonnllyy))
+              If non-zero, then the --hh option was supplied on the
+              command line.
+
+       $$IIggnnoorreeOOnnccee ((rreeaadd--oonnllyy))
+              If non-zero, then the --oo option was supplied on the
+              command line, or a date different from today's true
+              date  was  supplied.  If non-zero, then OONNCCEE direc-
+              tives will be ignored.
+
+       $$IInnffDDeellttaa ((rreeaadd--oonnllyy))
+              If non-zero, then the --tt option was supplied on the
+              command line.
+
+       $$LLaattDDeegg,, $$LLaattMMiinn,, $$LLaattSSeecc
+              These specify the latitude of your location.  $$LLaatt--
+              DDeegg can range from -90 to 90, and the  others  from
+              -59 to 59.  Northern latitudes are positive; south-
+              ern ones are negative.  For southern latitudes, all
+              three components should be negative.
+
+       $$LLooccaattiioonn ((SSTTRRIINNGG ttyyppee))
+              This  is a string specifying the name of your loca-
+              tion.  It is usually the name of your town or city.
+              It  can be set to whatever you like, but good style
+              indicates that it should be  kept  consistent  with
+              the latitude and longitude system variables.
+
+       $$LLoonnggDDeegg,, $$LLoonnggMMiinn,, $$LLoonnggSSeecc
+              These  specify  the  longitude  of  your  location.
+              $$LLoonnggDDeegg can range from -180 to 180.  Western  lon-
+              gitudes are positive; eastern ones are negative.
+
+              The  latitude and longitude information is required
+              for the functions ssuunnrriissee(()) and ssuunnsseett(()).   Default
+              values  can be compiled into RReemmiinndd, or you can SSEETT
+              the correct values at the start  of  your  reminder
+              scripts.
+
+       $$MMaaxxSSaattIItteerr
+              The  maximum  number  of iterations for the SSAATTIISSFFYY
+              clause (described later.)  Must be at least 10.
+
+       $$MMiinnssFFrroommUUTTCC
+              The number of minutes between Universal Time  Coor-
+              dinated  and  local time.  If $$CCaallccUUTTCC is non-zero,
+              this is calculated upon startup of RReemmiinndd.   Other-
+              wise,  you  must set it explicitly.  If $$CCaallccUUTTCC is
+              zero, then $$MMiinnssFFrroommUUTTCC is used in the astronomical
+              calculations.  You must adjust it for daylight sav-
+              ings time yourself.  Also, if you want to  initial-
+              ize  $$MMiinnssFFrroommUUTTCC using the --ii command-line option,
+              you must also set $$CCaallccUUTTCC to 0 with the --ii option.
+
+
+
+
+                         13 October 1993                       27
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+       $$NNeexxttMMooddee ((rreeaadd--oonnllyy))
+              If non-zero, then the --nn option was supplied on the
+              command line.
+
+       $$NNuummQQuueeuueedd ((rreeaadd--oonnllyy))
+              Contains the number of reminders queued so far  for
+              background  timed  triggering.   For MS-DOS, always
+              returns 0.
+
+       $$NNuummTTrriigg ((rreeaadd--oonnllyy))
+              Contains the number of reminders triggered for  the
+              current date.  One use for this variable is as fol-
+              lows:  Suppose you wish to shade in the  box  of  a
+              PostScript  calendar  whenever  a  holiday is trig-
+              gered.  You could save the value of $$NNuummTTrriigg  in  a
+              regular variable prior to executing a block of hol-
+              iday reminders.  If the value of $$NNuummTTrriigg after the
+              holiday block is greater than the saved value, then
+              at least one holiday was  triggered,  and  you  can
+              execute  the  command to shade in the calendar box.
+              (See the section "Calendar Mode".)
+
+              Note that $$NNuummTTrriigg is affected  _o_n_l_y  by  RREEMM  com-
+              mands;  triggers  in  IIFFTTRRIIGG commands do not affect
+              it.
+
+       $$PPSSCCaall ((rreeaadd--oonnllyy))
+              If non-zero, then the --pp option was supplied on the
+              command line.
+
+       $$RRuunnOOffff ((rreeaadd--oonnllyy))
+              If non-zero, the RRUUNN directives are disabled.
+
+       $$SSiimmpplleeCCaall ((rreeaadd--oonnllyy))
+              Set  to  a non-zero value if _e_i_t_h_e_r of the --pp or --ss
+              command-line options was supplied.
+
+       $$SSoorrttBByyDDaattee ((rreeaadd--oonnllyy))
+              Set to 0 if no --gg option is used, 1 if  sorting  by
+              date in ascending order, or 2 if sorting by date in
+              descending order.
+
+       $$SSoorrttBByyPPrriioo ((rreeaadd--oonnllyy))
+              Set to 0 if no --gg option is used, 1 if  sorting  by
+              priority  in  ascending  order,  or 2 if sorting by
+              priority in descending order.
+
+       $$SSoorrttBByyTTiimmee ((rreeaadd--oonnllyy))
+              Set to 0 if no --gg option is used, 1 if  sorting  by
+              time in ascending order, or 2 if sorting by time in
+              descending order.
+
+       $$SSuubbssIInnddeenntt
+              The number of spaces by which all lines (except the
+
+
+
+                         13 October 1993                       28
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+              first)  of an MMSSFF-type reminder should be indented.
+              The default is 0.
+
+       Note:  If any of the calendar modes are  in  effect,  then
+       the  values  of  $Daemon,  $DontFork,  $DontTrigAts, $Don-
+       tQueue, $HushMode, $IgnoreOnce, $InfDelta,  and  $NextMode
+       are not meaningful.
+
+       BBUUIILLTT--IINN FFUUNNCCTTIIOONNSS
+
+       RReemmiinndd  has  a plethora of built-in functions.  The syntax
+       for a function call is the same as in  C  -  the  function
+       name,  followed  a  comma-separated  list  of arguments in
+       parentheses.  Function names are not case-sensitive.  If a
+       function  takes  no arguments, it must be followed by "()"
+       in the function call.  Otherwise, RReemmiinndd will interpret it
+       as a variable name, and probably not work correctly.
+
+       In  the descriptions below, short forms are used to denote
+       acceptable types for the arguments.  The  characters  "i",
+       "s",  "d"  and "t" denote IINNTT, SSTTRRIINNGG, DDAATTEE and TTIIMMEE argu-
+       ments, respectively.  If an argument can be one of several
+       types,  the  characters  are  concatenated.   For example,
+       "di_arg" denotes an argument which can be  a  DDAATTEE  or  an
+       IINNTT.   "x_arg"  denotes  an  argument  which can be of any
+       type.  The type of the argument is followed by  an  under-
+       score  and  an  identifier naming the argument, for conve-
+       nience.
+
+       The built-in functions are:
+
+       aabbss((ii__nnuumm))
+              Returns the absolute value of _n_u_m.
+
+       aacccceessss((ss__ffiillee,, ssii__mmooddee))
+              Tests the access permissions  for  the  file  _f_i_l_e.
+              _M_o_d_e can be a string, containing a mix of the char-
+              acters "rwx" for read, write and execute permission
+              testing.   Alternatively,  _m_o_d_e  can be a number as
+              described in the UNIX aacccceessss(2) system  call.   The
+              function returns 0 if the file can be accessed with
+              the specified _m_o_d_e, and -1 otherwise.
+
+       aarrggss((ss__ffnnaammee))
+              Returns the number of  arguments  expected  by  the
+              user-defined function _f_n_a_m_e, or -1 if no such user-
+              defined function exists.  Note that  this  function
+              examines  only user-defined functions, not built-in
+              functions.  Its main use is to determine whether or
+              not  a  particular  user-defined  function has been
+              defined previously.  The aarrggss(()) function is  avail-
+              able  only  in versions of RReemmiinndd from 03.00.04 and
+              up.
+
+
+
+
+                         13 October 1993                       29
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+       aasscc((ss__ssttrriinngg))
+              Returns an IINNTT which is the ASCII code of the first
+              character  in  _s_t_r_i_n_g.   As a special case, aasscc((""""))
+              returns 0.
+
+       bbaasseeyyrr(())
+              Returns the "base year"  which  was  compiled  into
+              RReemmiinndd  (normally  1990.)   All  dates  are  stored
+              internally as the number of days since 1 January of
+              bbaasseeyyrr(()).
+
+       cchhaarr((ii__ii11 [[,,ii__ii22......]]))
+              This function can take any number of IINNTT arguments.
+              It returns a SSTTRRIINNGG consisting  of  the  characters
+              specified  by the arguments.  Note that none of the
+              arguments can be 0, unless there is only one  argu-
+              ment.  As a special case, cchhaarr((00)) returns "".
+
+              Note  that because RReemmiinndd does not support escaping
+              of characters in strings, the only  way  to  get  a
+              double-quote  in a string is to use cchhaarr((3344)).  Yes,
+              I know it's not portable - it assumes ASCII coding.
+
+       cchhoooossee((ii__iinnddeexx,, xx__aarrgg11 [[,,xx__aarrgg22......]]))
+              CChhoooossee  must take at least two arguments, the first
+              of which is an IINNTT.  If _i_n_d_e_x is _n,  then  the  _nth
+              subsequent  argument is returned.  If _i_n_d_e_x is less
+              than 1, then _a_r_g_1 is returned.  If _i_n_d_e_x is greater
+              than  the  number of subsequent arguments, then the
+              last argument is returned.  Examples:
+
+                 cchhoooossee((00,, ""ffoooo"",, 11::1133,, 11000000)) returns "foo"
+                 cchhoooossee((11,, ""ffoooo"",, 11::1133,, 11000000)) returns "foo"
+                 cchhoooossee((22,, ""ffoooo"",, 11::1133,, 11000000)) returns 1:13
+                 cchhoooossee((33,, ""ffoooo"",, 11::1133,, 11000000)) returns 1000
+                 cchhoooossee((44,, ""ffoooo"",, 11::1133,, 11000000)) returns 1000
+              Note that all  arguments  to  cchhoooossee(())  are  _a_l_w_a_y_s
+              evaluated.
+
+       ccooeerrccee((ss__ttyyppee,, xx__aarrgg))
+              This  function  converts _a_r_g to the specified _t_y_p_e,
+              if such conversion is possible.  _T_y_p_e must  be  one
+              of   "INT",   "STRING",  "DATE"  or  "TIME"  (case-
+              insensitive).  The conversion rules are as follows:
+
+              If  _a_r_g  is  already  of  the _t_y_p_e specified, it is
+              returned unchanged.
+
+              If _t_y_p_e is "STRING", then _a_r_g  is  converted  to  a
+              string consisting of its printed representation.
+
+              If  _t_y_p_e is "DATE", then an IINNTT _a_r_g is converted by
+              interpreting it as the number of days since 1  Jan-
+              uary  bbaasseeyyrr(()).   A  SSTTRRIINNGG  _a_r_g  is  converted  by
+
+
+
+                         13 October 1993                       30
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+              attempting to read it as if it were a printed date.
+              A TTIIMMEE _a_r_g cannot be converted to a date.
+
+              If  _t_y_p_e is "TIME", then an IINNTT _a_r_g is converted by
+              interpreting it as the number of minutes since mid-
+              night.   A SSTTRRIINNGG _a_r_g is converted by attempting to
+              read it as if it were a printed time.  A  DDAATTEE  _a_r_g
+              cannot be converted to a time.
+
+              If  _t_y_p_e is "INT", then DDAATTEE and TTIIMMEE arguments are
+              converted using the reverse of procedures described
+              above.   A SSTTRRIINNGG _a_r_g is converted by parsing it as
+              an integer.
+
+       ddaattee((ii__yy,, ii__mm,, ii__dd))
+              The ddaattee(()) function returns a DDAATTEE object with  the
+              year,  month  and  day components specified by _y, _m
+              and _d.
+
+       ddaayy((dd__ddaattee))
+              This function takes a  DDAATTEE  as  an  argument,  and
+              returns  an IINNTT which is the day-of-month component
+              of _d_a_t_e.
+
+       ddaayyssiinnmmoonn((ii__mm,, ii__yy))
+              Returns the number of days in month _m (1-12) of the
+              year _y.
+
+       ddeeffiinneedd((ss__vvaarr))
+              Returns  1 if the variable named by _v_a_r is defined,
+              or 0 if it is not.
+              Note that ddeeffiinneedd(()) takes a SSTTRRIINNGG argument;  thus,
+              to check if variable X is defined, use:
+
+                        defined("X")
+
+              and not:
+
+                        defined(X)
+
+              The  second example will attempt to evaluate X, and
+              will return an error if it is undefined or  not  of
+              type SSTTRRIINNGG.
+
+       ddoossuubbsstt((ss__ssttrr [[,,dd__ddaattee [[,,tt__ttiimmee]]]]))
+              Returns a SSTTRRIINNGG which is the result of passing _s_t_r
+              through the substitution filter described  earlier.
+              The  parameters  _d_a_t_e and _t_i_m_e establish the effec-
+              tive trigger date and time used by the substitution
+              filter.  If _d_a_t_e and _t_i_m_e are omitted, they default
+              to ttooddaayy(()) and nnooww(()).
+
+              Note that if _s_t_r does not end with "%",  a  newline
+              character  will  be added to the end of the result.
+
+
+
+                         13 October 1993                       31
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+              Also, calling ddoossuubbsstt(()) with a _d_a_t_e which is in the
+              past  (i.e.,  if _d_a_t_e < ttooddaayy(())) will produce unde-
+              fined results.
+
+              DDoossuubbsstt(()) is only available starting  from  version
+              03.00.04 of RReemmiinndd.
+
+       eeaasstteerrddaattee((ddii__aarrgg))
+              If  _a_r_g  is an IINNTT, then returns the date of Easter
+              Sunday for the specified year.  If _a_r_g is  a  DDAATTEE,
+              then  returns the date of the next Easter Sunday on
+              or after _a_r_g.
+
+       ffiilleeddaattee((ss__ffiilleennaammee))
+              Returns the  modification  date  of  _f_i_l_e_n_a_m_e.   If
+              _f_i_l_e_n_a_m_e  does  not exist, or its modification date
+              is before the year  bbaasseeyyrr(()),  then  1  January  of
+              bbaasseeyyrr(()) is returned.
+
+       ffiilleeddiirr(())
+              Returns  the  directory  which contains the current
+              file being processed.  It  may  be  a  relative  or
+              absolute  pathname, but is guaranteed to be correct
+              for use in an IINNCCLLUUDDEE command as follows:
+
+                 INCLUDE [filedir()]/stuff
+
+              This includes the file "stuff" in the  same  direc-
+              tory as the current file being processed.
+
+       ffiilleennaammee(())
+              Returns  (as a SSTTRRIINNGG) the name of the current file
+              being processed by RReemmiinndd.  Inside included  files,
+              returns the name of the included file.
+
+       ggeetteennvv((ss__eennvvvvaarr))
+              Similar  to  the  ggeetteennvv(2) system call.  Returns a
+              string representing  the  value  of  the  specified
+              environment  variable.   Returns "" if the environ-
+              ment variable is not defined.  Note that the  names
+              of   environment   variables  are  generally  case-
+              sensitive; thus, getenv("HOME") is not the same  as
+              getenv("home").
+
+       hhoouurr((tt__ttiimmee))
+              Returns the hour component of _t_i_m_e.
+
+       iiiiff((ssii__tteesstt11,, xx__aarrgg11,, [[ssii__tteesstt22,, xx__aarrgg22,,......]],, xx__ddeeffaauulltt))
+              If  _t_e_s_t_1  is  not zero or the null string, returns
+              _a_r_g_1.  Otherwise, if _t_e_s_t_2 is not zero or the  null
+              string,  returns  _a_r_g_2,  and  so on.  If all of the
+              _t_e_s_t arguments are false,  returns  _d_e_f_a_u_l_t.   Note
+              that  all  arguments  are  _a_l_w_a_y_s  evaluated.  This
+              function accepts an odd number of arguments -  note
+
+
+
+                         13 October 1993                       32
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+              that  prior  to  version  03.00.05  of  RReemmiinndd,  it
+              accepted 3 arguments only.  The 3-argument  version
+              of  iiiiff(())  is  compatible with previous versions of
+              RReemmiinndd.
+
+       iinnddeexx((ss__sseeaarrcchh,, ss__ttaarrggeett [[,,ii__ssttaarrtt))
+              Returns an IINNTT which is the location of  _t_a_r_g_e_t  in
+              the string _s_e_a_r_c_h.  The first character of a string
+              is numbered 1.  If _t_a_r_g_e_t does not exist in _s_e_a_r_c_h,
+              then 0 is returned.
+
+              The optional parameter _s_t_a_r_t specifies the position
+              in _s_e_a_r_c_h at which to start looking for _t_a_r_g_e_t.
+
+       iissddsstt(([[dd__ddaattee [[,,tt__ttiimmee]]]]))
+              Returns a positive number if daylight savings  time
+              is  in effect on the specified date and time.  _D_a_t_e
+              defaults to ttooddaayy(()) and _t_i_m_e defaults to  midnight.
+
+              Note  that this function is only as reliable as the
+              C run-time  library  functions.   It  is  available
+              starting with version 03.00.07 of RReemmiinndd.
+
+       iisslleeaapp((iidd__aarrgg))
+              Returns  1  if _a_r_g is a leap year, and 0 otherwise.
+              _A_r_g can be either an IINNTT or a DDAATTEE  object.   If  a
+              DDAATTEE  is  supplied, then the year component is used
+              in the test.
+
+       iissoommiitttteedd((dd__ddaattee))
+              Returns 1 if _d_a_t_e is  omitted,  given  the  current
+              global OOMMIITT context.  Returns 0 otherwise.
+
+       hheebbddaattee((ii__ddaayy,, ss__hheebbmmoonn [[,,iidd__yyrrssttaarrtt [[,,ii__jjaahhrr
+              [[,,ii__aaffllaagg]]]]]]))
+              Support for Hebrew dates -  see  the  section  "The
+              Hebrew Calendar"
+
+       hheebbddaayy((dd__ddaattee))
+              Support  for  Hebrew  dates  - see the section "The
+              Hebrew Calendar"
+
+       hheebbmmoonn((dd__ddaattee))
+              Support for Hebrew dates -  see  the  section  "The
+              Hebrew Calendar"
+
+       hheebbyyeeaarr((dd__ddaattee))
+              Support  for  Hebrew  dates  - see the section "The
+              Hebrew Calendar"
+
+       llaanngguuaaggee(())
+              Returns a SSTTRRIINNGG naming the language  supported  by
+              RReemmiinndd.    (See  "Foreign  Language  Support.")  By
+              default, RReemmiinndd  is  compiled  to  support  English
+
+
+
+                         13 October 1993                       33
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+              messages,  so this function returns "English".  For
+              other languages,  this  function  will  return  the
+              English  name  of the language (e.g. "German") Note
+              that llaanngguuaaggee(()) is not  available  in  versions  of
+              RReemmiinndd prior to 03.00.02.
+
+       lloowweerr((ss__ssttrriinngg))
+              Returns  a SSTTRRIINNGG with all upper-case characters in
+              _s_t_r_i_n_g converted to lower-case.
+
+       mmaaxx((xx__aarrgg11 [[,,xx__aarrgg22......))
+              Can take any number of arguments, and  returns  the
+              maximum.   The  arguments  can  be of any type, but
+              must all be of the same type.  They are compared as
+              with the > operator.
+
+       mmiinn((xx__aarrgg11 [[,,xx__aarrgg22......))
+              Can  take  any number of arguments, and returns the
+              minimum.  The arguments can be  of  any  type,  but
+              must all be of the same type.  They are compared as
+              with the < operator.
+
+       mmiinnssffrroommuuttcc(([[dd__ddaattee [[,,tt__ttiimmee]]]]))
+              Returns the number of minutes from  Universal  Time
+              Coordinated  (formerly  GMT)  to  local time on the
+              specified date and time.  _D_a_t_e defaults to  ttooddaayy(())
+              and  _t_i_m_e  defaults  to midnight.  If local time is
+              before UTC, the result is negative.  Otherwise, the
+              result is positive.
+
+              Note  that this function is only as reliable as the
+              C run-time  library  functions.   It  is  available
+              starting with version 03.00.07 of RReemmiinndd.
+
+       mmiinnuuttee((tt__ttiimmee))
+              Returns the minute component of _t_i_m_e.
+
+       mmoonn((ddii__aarrgg))
+              If  _a_r_g  is  of  DDAATTEE  type, returns a string which
+              names the month component of the date.  If  _a_r_g  is
+              an  IINNTT  from 1 to 12, returns a string which names
+              the month.
+
+       mmoonnnnuumm((dd__ddaattee))
+              Returns an IINNTT from 1 to 12, representing the month
+              component of _d_a_t_e.
+
+       mmoooonnddaattee((ii__pphhaassee [[,,dd__ddaattee [[,,tt__ttiimmee]]]]))
+              This  function returns the date of the first occur-
+              rence of the phase _p_h_a_s_e of the moon  on  or  after
+              _d_a_t_e and _t_i_m_e.  _P_h_a_s_e can range from 0 to 3, with 0
+              signifying new moon, 1 first quarter, 2 full  moon,
+              and  3  third  quarter.   If  _d_a_t_e  is  omitted, it
+              defaults  to  ttooddaayy(()).   If  _t_i_m_e  is  omitted,  it
+
+
+
+                         13 October 1993                       34
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+              defaults to midnight.
+
+              For  example, the following returns the date of the
+              next full moon:
+
+                        SET fullmoon moondate(2)
+
+
+       mmoooonnttiimmee((ii__pphhaassee [[,,dd__ddaattee [[,,tt__ttiimmee]]]]))
+              This function returns the time of the first  occur-
+              rence  of  the  phase _p_h_a_s_e of the moon on or after
+              _d_a_t_e and _t_i_m_e.  _P_h_a_s_e can range from 0 to 3, with 0
+              signifying  new moon, 1 first quarter, 2 full moon,
+              and 3  third  quarter.   If  _d_a_t_e  is  omitted,  it
+              defaults  to  ttooddaayy(()).   If  _t_i_m_e  is  omitted,  it
+              defaults to midnight.  MMoooonnttiimmee(()) is intended to be
+              used  in  conjunction  with  mmoooonnddaattee(()).  The mmoooonn--
+              ddaattee(()) and mmoooonnttiimmee(())  functions  are  accurate  to
+              within  a  couple  of  minutes of the times in "Old
+              Farmer's Almanac" for Ottawa, Ontario.
+
+              For example, the following  returns  the  date  and
+              time of the next full moon:
+
+                        MSG Next full moon at [moontime(2)] on [moondate(2)]
+
+
+       mmoooonnpphhaassee(([[dd__ddaattee [[,,tt__ttiimmee]]]]))
+              This function returns the phase of the moon on _d_a_t_e
+              and _t_i_m_e, which default to  ttooddaayy(())  and  midnight,
+              respectively.   The  returned  value  is an integer
+              from 0 to 359, representing the phase of  the  moon
+              in  degrees.   0 is a new moon, 180 is a full moon,
+              90 is first-quarter, etc.
+
+       nnooww(())  Returns the current system time, as a TTIIMMEE type.
+
+       oorrdd((ii__nnuumm))
+              Returns a string which is the ordinal  number  _n_u_m.
+              For  example,  oorrdd((22))  returns  "2nd", and oorrdd((221133))
+              returns "213th".
+
+       oossttyyppee(())
+              Returns "UNIX" on UNIX systems, "MSDOS"  on  MS-DOS
+              systems,  and  "OS/2"  on OS/2 systems.  If you run
+              RReemmiinndd in an MS-DOS box under OS/2,  this  function
+              returns "MSDOS".
+
+       pplluurraall((ii__nnuumm [[,,ss__ssttrr11 [[,,ss__ssttrr22]]]]))
+              Can take from one to three arguments.  If one argu-
+              ment is supplied, returns "s" if _n_u_m is not 1,  and
+              "" if _n_u_m is 1.
+
+              If  two  arguments are supplied, returns _s_t_r_1 + "s"
+
+
+
+                         13 October 1993                       35
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+              if _n_u_m is not 1.  Otherwise, returns _s_t_r_1.
+
+              If three arguments are supplied,  returns  _s_t_r_1  if
+              _n_u_m is 1, and _s_t_r_2 otherwise.
+
+       ppssmmoooonn((ii__pphhaassee [[,,ii__ssiizzee]]))
+              Returns  a  SSTTRRIINNGG consisting of PostScript code to
+              draw a moon in the upper-left hand  corner  of  the
+              calendar  box.   _P_h_a_s_e  specifies  the phase of the
+              moon, and is 0 (new moon),  1  (first  quarter),  2
+              (full moon) or 3 (third quarter).  If _s_i_z_e is spec-
+              ified, it  controls  the  radius  of  the  moon  in
+              PostScript  units (1/72 inch.)  If it is not speci-
+              fied, the size of the day-number font is used.
+
+              For example, the following four  lines  place  moon
+              symbols on the PostScript calendar:
+
+                        REM [trigger(moondate(0))] PS [psmoon(0)]
+                        REM [trigger(moondate(1))] PS [psmoon(1)]
+                        REM [trigger(moondate(2))] PS [psmoon(2)]
+                        REM [trigger(moondate(3))] PS [psmoon(3)]
+
+
+       ppsssshhaaddee((ii__nnuumm))
+              Returns  a SSTTRRIINNGG which consists of PostScript com-
+              mands to shade a calendar box.  _N_u_m can range  from
+              0  (completely  black)  to  100 (completely white.)
+              Here's an example of how to use this:
+
+                        REM Sat Sun PS [psshade(95)]
+
+              The above command emits PostScript code to  lightly
+              shade  the  boxes  for  Saturday  and  Sunday  in a
+              PostScript calendar.
+
+       rreeaallttooddaayy(())
+              Returns the date as provided by the operating  sys-
+              tem.   This  is  in contrast to RReemmiinndd's concept of
+              "today", which may be changed if it is  running  in
+              calendar  mode,  or  if a date has been supplied on
+              the command line.
+
+       ssggnn((ii__nnuumm))
+              Returns -1 if _n_u_m is negative, 1 if  _n_u_m  is  posi-
+              tive, and 0 if _n_u_m is zero.
+
+       sshheellll((ss__ccmmdd))
+              Executes  _c_m_d  as a system command, and returns the
+              first 511 characters of output resulting from  _c_m_d.
+              Any whitespace character in the output is converted
+              to a space.  Note that if RRUUNN  OOFFFF  has  been  exe-
+              cuted, or the --rr command-line option has been used,
+              sshheellll(()) will result in an error, and _c_m_d  will  not
+
+
+
+                         13 October 1993                       36
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+              be executed.
+
+       ssttrrlleenn((ss__ssttrr))
+              Returns the length of _s_t_r.
+
+       ssuubbssttrr((ss__ssttrr,, ii__ssttaarrtt [[,,ii__eenndd]]))
+              Returns  a  SSTTRRIINNGG  consisting of all characters in
+              _s_t_r from _s_t_a_r_t up to and including _e_n_d.  Characters
+              are  numbered from 1.  If _e_n_d is not supplied, then
+              it defaults to the length of _s_t_r.
+
+       ssuunnrriissee(([[dd__ddaattee]]))
+              Returns a TTIIMMEE indicating the time  of  sunrise  on
+              the specified _d_a_t_e (default ttooddaayy(()).)  In high lat-
+              titudes, there may be no sunrise  on  a  particular
+              day, in which case ssuunnrriissee(()) returns the IINNTT 0.
+
+       ssuunnsseett(([[dd__ddaattee]]))
+              Returns a TTIIMMEE indicating the time of sunset on the
+              specified _d_a_t_e (default ttooddaayy(()).)  In  high  latti-
+              tudes,  there may be no sunset on a particular day,
+              in which case ssuunnsseett(()) returns the IINNTT 0.
+
+              The functions ssuunnrriissee(()) and ssuunnsseett(()) are  based  on
+              an algorithm in "Almanac for Computers for the year
+              1978" by L. E. Doggett,  Nautical  Almanac  Office,
+              USNO.   They  require the latitude and longitude to
+              be specified  by  setting  the  appropriate  system
+              variables.   (See  "System  Variables".)   The  sun
+              functions should be accurate to within about 2 min-
+              utes  for  latitudes  lower  than  60 degrees.  The
+              functions  are  available  starting  from   version
+              03.00.07 of RReemmiinndd.
+
+       ttiimmee((ii__hhrr,, ii__mmiinn))
+              Creates  a TTIIMMEE with the hour and minute components
+              specified by _h_r and _m_i_n.
+
+       ttooddaayy(())
+              Returns RReemmiinndd's notion of "today."   This  may  be
+              the  actual  system date, or a date supplied on the
+              command line, or the date  of  the  calendar  entry
+              currently being computed.
+
+       ttrriiggddaattee(())
+              Returns the calculated trigger date of the last RREEMM
+              or IIFFTTRRIIGG command.  If used in the _b_o_d_y  of  a  RREEMM
+              command, returns that command's trigger date.
+
+       ttrriiggggeerr((dd__ddaattee [[,,tt__ttiimmee [[,,ii__uuttccffllaagg]]]]))
+              Returns a string suitable for use in a RREEMM command,
+              allowing you to calculate trigger dates in advance.
+              (See  the  section  "Expression  pasting"  for more
+              information.)  Normally, the _d_a_t_e and _t_i_m_e are  the
+
+
+
+                         13 October 1993                       37
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+              local  date  and  time; however, if _u_t_c_f_l_a_g is non-
+              zero, the _d_a_t_e and  _t_i_m_e  are  interpreted  as  UTC
+              times, and are converted to local time.  Examples:
+
+              trigger('1993/04/01')
+
+              returns "1 April 1993",
+
+              trigger('1994/08/09', 12:33)
+
+              returns "9 August 1994 AT 12:33", and
+
+              trigger('1994/12/01', 03:00, 1)
+
+              returns  "30 November 1994 AT 22:00" for EST, which
+              is 5 hours behind UTC.  The  value  for  your  time
+              zone may differ.
+
+       ttrriiggttiimmee(())
+              Returns the time of the last RREEMM command with an AATT
+              clause.
+
+       ttrriiggvvaalliidd(())
+              Returns 1 if the value returned  by  ttrriiggddaattee(())  is
+              valid  for the most recent RREEMM command, or 0 other-
+              wise.  Sometimes RREEMM commands  cannot  calculate  a
+              trigger  date.  For example, the following RREEMM com-
+              mand can never be triggered:
+
+                 REM Mon OMIT Mon SKIP MSG Impossible!
+
+
+       ttyyppeeooff((xx__aarrgg))
+              Returns "STRING", "INT", "DATE" or "TIME",  depend-
+              ing on the type of _a_r_g.
+
+       uuppppeerr((ss__ssttrriinngg))
+              Returns  a SSTTRRIINNGG with all lower-case characters in
+              _s_t_r_i_n_g converted to upper-case.
+
+       vvaalluuee((ss__vvaarrnnaammee [[,,xx__ddeeffaauulltt]]))
+              Returns the value of the specified  variable.   For
+              example,  value("X"+"Y") returns the value of vari-
+              able XY, if it is defined.  If XY is  not  defined,
+              an error results.
+
+              However,  if  you  supply  a second argument, it is
+              returned  if  the  _v_a_r_n_a_m_e  is  not  defined.   The
+              expression  value("XY",  0)  will return 0 if XY is
+              not defined, and the value of XY if it is  defined.
+
+       vveerrssiioonn(())
+              Returns  a string specifying the version of RReemmiinndd.
+              For version 03.00.04, returns  "03.00.04".   It  is
+
+
+
+                         13 October 1993                       38
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+              guaranteed  that  as  new  versions  of  RReemmiinndd are
+              released, the  value  returned  by  vveerrssiioonn(())  will
+              strictly  increase,  according  to  the  rules  for
+              string ordering.
+
+       wwkkddaayy((ddii__aarrgg))
+              If _a_r_g is a DDAATTEE, returns a string representing the
+              day of the week of the date.  If _a_r_g is an IINNTT from
+              0 to 6, returns the corresponding weekday ("Sunday"
+              to "Saturday").
+
+       wwkkddaayynnuumm((dd__ddaattee))
+              Returns  a number from 0 to 6 representing the day-
+              of-week of the specified _d_a_t_e.  (0 represents  Sun-
+              day, and 6 represents Saturday.)
+
+       yyeeaarr((dd__ddaattee))
+              Returns  a IINNTT which is the year component of _d_a_t_e.
+
+EEXXPPRREESSSSIIOONN PPAASSTTIINNGG
+       An extremely powerful feature of RReemmiinndd is its macro capa-
+       bility, or "expression pasting."
+
+       In  almost  any situation where RReemmiinndd is not expecting an
+       expression, you can "paste" an expression in.  To do this,
+       surround  the  expression with square brackets.  For exam-
+       ple:
+
+            REM [trigger(mydate)] MSG foo
+
+       This evaluates  the  expression  "trigger(mydate)",  where
+       "mydate"  is  presumably  some  pre-computed variable, and
+       then "pastes" the result into  the  command-line  for  the
+       parser to process.
+
+       A formal description of this is:  When RReemmiinndd encounters a
+       "pasted-in" expression, it evaluates the  expression,  and
+       coerces  the  result to a SSTTRRIINNGG.  It then substitutes the
+       string for the pasted-in expression, and  continues  pars-
+       ing.   Note,  however, that expressions are evaluated only
+       once, not recursively.  Thus, writing:
+
+            ["[a+b]"]
+
+       causes RReemmiinndd to read the  token  "[a+b]".   It  does  not
+       interpret  this  as  a pasted-in expression.  In fact, the
+       only way to get a literal left-bracket into a reminder  is
+       to use ["["].
+
+       You  can use expression pasting almost anywhere.  However,
+       there are a few exceptions:
+
+       o      If RReemmiinndd is expecting an expression, as in the SSEETT
+              command,  or  the  IIFF  command,  then no expression
+
+
+
+                         13 October 1993                       39
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+              pasting takes  place.   The  expression  is  simply
+              evaluated as if the square brackets were not there.
+
+       o      You cannot use expression  pasting  for  the  first
+              token  on  a line.  For example, the following will
+              not work:
+
+                 ["SET"] a 1
+
+              This restriction is because RReemmiinndd must be able  to
+              unambiguously  determine  the first token of a line
+              for the  flow-control  commands  (to  be  discussed
+              later.)
+
+              In fact, if RReemmiinndd cannot determine the first token
+              on a line, it assumes that it is a RREEMM command.  If
+              expression-pasting  is used, RReemmiinndd assumes it is a
+              RREEMM command.  Thus, the  following  three  commands
+              are equivalent:
+
+                        REM 12 Nov 1993 AT 13:05 MSG BOO!
+                        12 Nov 1993 AT 13:05 MSG BOO!
+                        [12] ["Nov " + 1993] AT [12:05+60] MSG BOO!
+
+       o      You  cannot use expression-pasting to determine the
+              type (MMSSGG, CCAALL, etc.) of a RREEMM  command.   You  can
+              paste  expressions  before  and  after the MMSSGG, etc
+              keywords, but cannot do something like this:
+
+                 REM ["12 Nov 1993 AT 13:05 " + "MSG" + " BOO!"]
+
+       CCOOMMMMOONN PPIITTFFAALLLLSS IINN EEXXPPRREESSSSIIOONN PPAASSTTIINNGG
+
+       Remember, when pasting in expressions, that  extra  spaces
+       are not inserted.  Thus, something like:
+
+            REM[expr]MSG[expr]
+
+       will probably fail.
+
+       If  you  use  an  expression to calculate a _d_e_l_t_a or _b_a_c_k,
+       ensure that the result is a  positive  number.   Something
+       like:
+
+            REM +[mydelta] Nov 12 1993 MSG foo
+
+       will fail if _m_y_d_e_l_t_a happens to be negative.
+
+
+FFLLOOWW CCOONNTTRROOLL CCOOMMMMAANNDDSS
+       RReemmiinndd  has  commands which control the flow of a reminder
+       script.  Normally, reminder scripts are processed  sequen-
+       tially.   However,  IIFF  and  related commands allow you to
+       process files conditionally, and skip sections  which  you
+
+
+
+                         13 October 1993                       40
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+       don't want interpreted.
+
+       TTHHEE IIFF CCOOMMMMAANNDD
+
+       The IIFF command has the following form:
+
+            IF expr
+                 t-command
+                 t-command...
+            ELSE
+                 f-command
+                 f-command...
+            ENDIF
+
+       Note  that  the  commands  are shown indented for clarity.
+       Also, the EELLSSEE portion can be omitted.  IIFF commands can be
+       nested up to a small limit, probably around 8 or 16 levels
+       of nesting, depending on your system.
+
+       If the _e_x_p_r evaluates to a non-zero  IINNTT,  or  a  non-null
+       SSTTRRIINNGG, then the IIFF portion is considered true, and the _t_-
+       _c_o_m_m_a_n_d_s are executed.  If _e_x_p_r evaluates to zero or null,
+       then  the  _f_-_c_o_m_m_a_n_d_s (if the EELLSSEE portion is present) are
+       executed.  If _e_x_p_r is not of type IINNTT or SSTTRRIINNGG,  then  it
+       is an error.
+
+       Examples:
+
+            IF defined("want_hols")
+                 INCLUDE /usr/share/remind/holidays
+            ENDIF
+
+            IF today() > '1992/2/10'
+                 set missed_ap "You missed it!"
+            ELSE
+                 set missed_ap "Still have time..."
+            ENDIF
+
+       TTHHEE IIFFTTRRIIGG CCOOMMMMAANNDD
+
+       The  IIFFTTRRIIGG  command  is  similar to an IIFF command, except
+       that it computes a trigger (as in the  RREEMM  command),  and
+       evaluates  to  true  if  a corresponding RREEMM command would
+       trigger.  Examples:
+
+            IFTRIG 1 Nov
+                 ; Executed on 1 Nov
+            ELSE
+                 ; Executed except on 1 Nov
+            ENDIF
+
+            IFTRIG 1 -1 OMIT Sat Sun +4
+                 ; Executed on last working day of month,
+                 ; and the 4 working days preceding it
+
+
+
+                         13 October 1993                       41
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+            ELSE
+                 ; Executed except on above days
+            ENDIF
+
+       Note that the IIFFTTRRIIGG  command  computes  a  trigger  date,
+       which  can be retrieved with the ttrriiggddaattee(()) function.  You
+       can use all of the  normal  trigger  components,  such  as
+       UUNNTTIILL, _d_e_l_t_a, etc in the IIFFTTRRIIGG command.
+
+
+UUSSEERR--DDEEFFIINNEEDD FFUUNNCCTTIIOONNSS
+       In  addition  to the built-in functions, RReemmiinndd allows you
+       to define your own functions.  The FFSSEETT command does  this
+       for you:
+
+       FFSSEETT _f_n_a_m_e(_a_r_g_s) _e_x_p_r
+
+       _F_n_a_m_e is the name of the function, and follows the conven-
+       tion for naming variables.  _A_r_g_s is a comma-separated list
+       of  arguments,  and  _e_x_p_r  is  an expression.  _A_r_g_s can be
+       empty, in which case  you  define  a  function  taking  no
+       parameters.  Here are some examples:
+
+            FSET double(x) 2*x
+            FSET yeardiff(date1, date2) year(date1) - year(date2)
+            FSET since(x) ord(year(trigdate())-x)
+
+       The  last  function  is useful in birthday reminders.  For
+       example:
+
+            REM 1 Nov +12 MSG Dean's [since(1984)] birthday is %b.
+
+       Dean was born in 1984.  The above example, on  1  November
+       1992, would print:
+
+            Dean's 8th birthday is today.
+
+       Notes:
+
+       o      If  you  access  a variable in _e_x_p_r which is not in
+              the list of arguments, the "global" value (if  any)
+              is used.
+
+       o      Function  and  parameter names are significant only
+              to 12 characters.
+
+       o      The vvaalluuee(()) function _a_l_w_a_y_s accesses  the  "global"
+              value  of  a variable, even if it has the same name
+              as an argument.  For example:
+
+                        fset func(x) value("x")
+                        set x 1
+                        set y func(5)
+
+
+
+
+                         13 October 1993                       42
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+              The above sequence sets y to 1, which is the global
+              value of x.
+
+       o      User-defined  functions  may  call other functions,
+              including other user-defined  functions.   However,
+              recursive calls are not allowed.
+
+       o      User-defined  functions are not syntax-checked when
+              they are defined; parsing occurs only when they are
+              called.
+
+       o      If  a  user-defined function has the same name as a
+              built-in function, it is ignored and  the  built-in
+              function is used.  To prevent conflicts with future
+              versions of RReemmiinndd (which may define more  built-in
+              functions),  you  may wish to name all user-defined
+              functions beginning with an underscore.
+
+
+PPRREECCIISSEE SSCCHHEEDDUULLIINNGG
+       The SSCCHHEEDD keyword allows precise control over the schedul-
+       ing of timed reminders.  It should be followed by the name
+       of a user-defined function, _s_c_h_e_d___f_u_n_c_t_i_o_n.
+
+       If a scheduling function is supplied, then  it  must  take
+       one  argument of type IINNTT.  Rather than using the AATT time,
+       time _d_e_l_t_a, and time _r_e_p_e_a_t, RReemmiinndd calls  the  scheduling
+       function  to  determine when to trigger the reminder.  The
+       first time the reminder is queued, the scheduling function
+       is  called  with an argument of 1.  Each time the reminder
+       is triggered, it is re-scheduled by calling the scheduling
+       function again.  On each call, the argument is incremented
+       by one.
+
+       The return value of the scheduling function must be an IINNTT
+       or  a  TTIIMMEE.   If  the  return  value  is a TTIIMMEE, then the
+       reminder is re-queued to trigger at that time.  If it is a
+       positive  integer  _n,  then  the  reminder is re-queued to
+       trigger at the  previous  trigger  time  plus  _n  minutes.
+       Finally,  if  it  is  a negative integer or zero, then the
+       reminder is re-queued to trigger _n minutes before  the  AATT
+       time.   Note that there must be an AATT clause for the SSCCHHEEDD
+       clause to do anything.
+
+       Here's an example:
+
+            FSET _sfun(x) choose(x, -60, 30, 15, 10, 3, 1, 1, 1, 1, 0)
+            REM AT 13:00 SCHED _sfun MSG foo
+
+       The reminder would first be triggered at 13:00-60 minutes,
+       or at 12:00.  It would next be triggered 30 minutes later,
+       at 12:30.  Then, it would be triggered  at  12:45,  12:55,
+       12:58, 12:59, 13:00, 13:01 and 13:02.
+
+
+
+
+                         13 October 1993                       43
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+       NNOOTTEESS
+
+       1      If   an  error  occurs  during  the  evaluation  of
+              _s_c_h_e_d___f_u_n_c, then RReemmiinndd reverts  to  using  the  AATT
+              time  and  the  _d_e_l_t_a  and _r_e_p_e_a_t values, and never
+              calls _s_c_h_e_d___f_u_n_c again.
+
+       2      If processing _s_c_h_e_d___f_u_n_c yields a time earlier than
+              the  current  system  time, it is repeatedly called
+              with increasing argument until it  yields  a  value
+              greater  than  or  equal to the current time.  How-
+              ever, if the sequence of values  calculated  during
+              the  repetition  is  not  strictly increasing, then
+              RReemmiinndd reverts to the default behaviour  and  never
+              calls _s_c_h_e_d___f_u_n_c again.
+
+       3      It is quite possible using _s_c_h_e_d___f_u_n_c to keep trig-
+              gering a reminder even after the AATT-time.  However,
+              it  is  not  possible to reschedule a reminder past
+              midnight  -  no  crossing  of  date  boundaries  is
+              allowed.  Also, it is quite possible to nnoott trigger
+              a reminder on the AATT time when you use a scheduling
+              function.   However, if your scheduling function is
+              terminated (for reasons 1 and 2) before the AATT time
+              of  the  reminder,  it  _w_i_l_l be triggered at the AATT
+              time, because normal processing takes over.
+
+       4      Your scheduling functions should (as  a  matter  of
+              good  style)  return  0  when no more scheduling is
+              required.  See the example.
+
+       5      All scheduling functions are  evaluated  _a_f_t_e_r  the
+              entire Remind script has been read in.  So whatever
+              function definitions are in effect at  the  end  of
+              the script are used.
+
+
+TTHHEE SSAATTIISSFFYY CCLLAAUUSSEE
+       The form of RREEMM which uses SSAATTIISSFFYY is as follows:
+
+       RREEMM _t_r_i_g_g_e_r SSAATTIISSFFYY _e_x_p_r
+
+       The way this works is as follows:  RReemmiinndd first calculates
+       a trigger date, in the  normal  fashion.   Next,  it  sets
+       ttrriiggddaattee(()) to the calculated trigger date.  It then evalu-
+       ates _e_x_p_r.  If the result is not the null string or  zero,
+       processing  ends.   Otherwise,  RReemmiinndd  computes  the next
+       trigger date, and re-tests _e_x_p_r.  This iteration continues
+       until _e_x_p_r evaluates to non-zero or non-null, or until the
+       iteration limit specified with the --xx command-line  option
+       is reached.
+
+       If  _e_x_p_r  is  not satisfied, then ttrriiggvvaalliidd(()) is set to 0.
+       Otherwise, ttrriiggvvaalliidd(()) is set to  1.   In  any  event,  no
+
+
+
+                         13 October 1993                       44
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+       error message is issued.
+
+       This  is really useful only if _e_x_p_r involves a call to the
+       ttrriiggddaattee(()) function; otherwise, _e_x_p_r will  not  change  as
+       RReemmiinndd iterates.
+
+       An example of the usefulness of SSAATTIISSFFYY:  Suppose you wish
+       to be warned of every Friday the 13th.  Your first attempt
+       may be:
+
+            # WRONG!
+            REM Fri 13 +2 MSG Friday the 13th is %b.
+
+       But  this won't work.  This reminder triggers on the first
+       Friday on or after the 13th of each month.  The way to  do
+       it is with a more complicated sequence:
+
+            REM 13 SATISFY wkdaynum(trigdate()) == 5
+            IF trigvalid()
+                 REM [trigger(trigdate())] +2 MSG \
+                 Friday the 13th is %b.
+            ENDIF
+
+       Let's  see  how  this  works.  The SSAATTIISSFFYY clause iterates
+       through all the 13ths of successive months, until a  trig-
+       ger  date is found whose day-of-week is Friday (== 5).  If
+       a valid date was found, we use the calculated trigger date
+       (converted  into a trigger format with the ttrriiggggeerr(()) func-
+       tion) to set up the next reminder.
+
+       We could also have written:
+
+            REM Fri SATISFY day(trigdate()) == 13
+
+       but this would result in more iterations, since  "Fridays"
+       occur more often than "13ths of the month."
+
+       This  technique  of  using  one RREEMM command to calculate a
+       trigger date to be used by another command is quite power-
+       ful.   For example, suppose you wanted to OMIT Labour day,
+       which is the first Monday in September.  You could use:
+
+            # Note: SATISFY 1 is an idiom for "do nothing"
+            REM Mon 1 Sept SATISFY 1
+            OMIT [trigger(trigdate())]
+
+       CCAAVVEEAATT:: This _o_n_l_y omits  the  _n_e_x_t  Labour  Day,  not  all
+       Labour  Days  in  the  future.   This  could cause strange
+       results, as the OOMMIITT context can change depending  on  the
+       current  date.  For example, if you use the following com-
+       mand after the above commands:
+
+            REM Mon AFTER msg hello
+
+
+
+
+                         13 October 1993                       45
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+       the result will not be as you expect.  Consider  producing
+       a calendar for September, 1992.  Labour Day was on Monday,
+       7 September, 1992.  However, when RReemmiinndd  gets  around  to
+       calculating  the  trigger  for Tuesday, 8 September, 1992,
+       the OOMMIITT command will now be omitting Labour Day for 1993,
+       and  the  "Mon AFTER" command will not be triggered.  (But
+       see the description of SSCCAANNFFRROOMM in  the  section  "Details
+       about Trigger Computation.")
+
+       It is probably best to stay away from computing OOMMIITT trig-
+       ger dates unless you keep these pitfalls in mind.
+
+       For versions of RReemmiinndd starting  from  03.00.07,  you  can
+       include  a  MMSSGG,  RRUUNN,  etc. clause in a SSAATTIISSFFYY clause as
+       follows:
+
+            REM trigger_stuff SATISFY [expr] MSG body
+
+       Note that for this case only, the _e_x_p_r after SSAATTIISSFFYY  _m_u_s_t
+       be  enclosed  in braces.  It must come after all the other
+       components of the trigger, and immediately before the MMSSGG,
+       RRUUNN,  etc. keyword.  If _e_x_p_r cannot be satisfied, then the
+       reminder is not triggered.
+
+       Thus, the "Friday the 13th" example can be expressed  more
+       compactly as:
+
+            REM 13 +2 SATISFY [wkdaynum(trigdate()) == 5] \
+                 MSG Friday the 13th is %b.
+
+       And  you can trigger a reminder on Mondays, Wednesdays and
+       Thursdays occurring on odd-numbered days of the month with
+       the following:
+
+            REM Mon Wed Thu SATISFY [day(trigdate())%2] \
+                 MSG Here it is!!!
+
+
+DDEEBBUUGGGGIINNGG RREEMMIINNDDEERR SSCCRRIIPPTTSS
+       Although  the  command-line --dd option is useful for debug-
+       ging, it is often overkill.  For example, if you  turn  on
+       the  --ddxx  option  for  a  reminder  file with many complex
+       expressions, you'll get a  huge  amount  of  output.   The
+       DDEEBBUUGG  command  allows  you to control the debugging flags
+       under program control.  The format is:
+
+       DDEEBBUUGG [+_f_l_a_g_s_o_n] [-_f_l_a_g_s_o_f_f]
+
+       _F_l_a_g_s_o_n and _f_l_a_g_s_o_f_f consist of strings of the  characters
+       "extvl"  which  correspond  to  the debugging options dis-
+       cussed in the command-line options section.   If  preceded
+       with  a  "+", the corresponding group of debugging options
+       is switched on.  Otherwise, they are  switched  off.   For
+       example,   you   could   use  this  sequence  to  debug  a
+
+
+
+                         13 October 1993                       46
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+       complicated expression:
+
+            DEBUG +x
+            set a very_complex_expression(many_args)
+            DEBUG -x
+
+       TTHHEE DDUUMMPPVVAARRSS CCOOMMMMAANNDD
+
+       The command DDUUMMPPVVAARRSS displays the values of  variables  in
+       memory.  Its format is:
+
+       DDUUMMPPVVAARRSS [_v_a_r...]
+
+       If  you  supply  a space-separated list of variable names,
+       the corresponding variables are displayed.  If you do  not
+       supply  a  list of variables, then all variables in memory
+       are displayed.  To dump a system variable, put its name in
+       the  list  of variables to dump.  If you put a lone dollar
+       sign in the list of variables to  dump,  then  all  system
+       variables will be dumped.
+
+       TTHHEE EERRRRMMSSGG CCOOMMMMAANNDD
+
+       The EERRRRMMSSGG command has the following format:
+
+       EERRRRMMSSGG _b_o_d_y
+
+       The  _b_o_d_y  is passed through the substitution filter (with
+       an implicit trigger date of ttooddaayy(())) and  printed  to  the
+       error output stream.  Example:
+
+            IF !defined("critical_var")
+                 ERRMSG You must supply a value for "critical_var"
+                 EXIT
+            ENDIF
+
+       TTHHEE EEXXIITT CCOOMMMMAANNDD
+
+       The  above example also shows the use of the EEXXIITT command.
+       This causes an unconditional exit from script  processing.
+       Any  queued  timed reminders are discarded.  If you are in
+       calendar mode (described next), then the calendar process-
+       ing is aborted.
+
+       If  you  supply an IINNTT-type expression after the EEXXIITT com-
+       mand, it is returned to the calling program  as  the  exit
+       status.  Otherwise, an exit status of 99 is returned.
+
+       TTHHEE FFLLUUSSHH CCOOMMMMAANNDD
+
+       This  command  simply consists of the word FFLLUUSSHH on a line
+       by itself.  The command flushes the  standard  output  and
+       standard error streams used by RReemmiinndd.  This is not terri-
+       bly useful to most people, but may be useful  if  you  run
+
+
+
+                         13 October 1993                       47
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+       RReemmiinndd as a subprocess of another program, and want to use
+       pipes for communication.
+
+
+CCAALLEENNDDAARR MMOODDEE
+       If you supply the --cc, --ss or --pp command-line  option,  then
+       RReemmiinndd  runs  in  "calendar  mode."   In this mode, RReemmiinndd
+       interprets the script repeatedly, performing one iteration
+       through  the  whole  file  for  each  day in the calendar.
+       Reminders which trigger are saved in internal buffers, and
+       then inserted into the calendar in the appropriate places.
+
+       If you also supply the --aa option,  then  RReemmiinndd  will  not
+       include timed reminders in the calendar.
+
+       The  --pp option is used in conjunction with the rreemm22ppss pro-
+       gram to produce a  calendar  in  PostScript  format.   For
+       example,  the  following command will send PostScript code
+       to standard output:
+
+            remind -p .reminders | rem2ps
+
+       You can print a PostScript calendar by piping this to  the
+       llpprr command.
+
+       If you have a reminder script called ".reminders", and you
+       execute this command:
+
+            remind -c .reminders jan 1993
+
+       then RReemmiinndd executes the script 31 times,  once  for  each
+       day  in  January.   Each  time  it executes the script, it
+       increments the value  of  ttooddaayy(()).   Any  reminders  whose
+       trigger  date  matches ttooddaayy(()) are entered into the calen-
+       dar.
+
+       MMSSGG and CCAALL-type reminders, by default, have their  entire
+       body  inserted  into the calendar.  RRUUNN-type reminders are
+       not normally inserted into the calendar.  However, if  you
+       enclose  a  portion  of  the body in the %"...%" sequence,
+       only that portion is inserted.  For example, consider  the
+       following:
+
+            REM 6 Jan MSG %"David's birthday%" is %b
+
+       In  the  normal mode, RReemmiinndd would print "David's birthday
+       is today" on 6 January.  However, in  the  calendar  mode,
+       only  the text "David's birthday" is inserted into the box
+       for 6 January.
+
+       If you explicitly use the %"...%" sequence in  a  RRUUNN-type
+       reminder, then the text between the delimiters is inserted
+       into the calendar.  If you use the sequence %"%" in a  MMSSGG
+       or  CCAALL-type  reminder, then no calendar entry is produced
+
+
+
+                         13 October 1993                       48
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+       for that reminder.
+
+       PPRREESSEERRVVIINNGG VVAARRIIAABBLLEESS
+
+       Because RReemmiinndd iterates through the script for each day in
+       the  calendar,  slow  operations  may  severely reduce the
+       speed of producing a calendar.
+
+       For example, suppose you set the variables "me" and "host-
+       name" as follows:
+
+            SET me shell("whoami")
+            SET hostname shell("hostname")
+
+       Normally,  RReemmiinndd  clears all variables between iterations
+       in calendar mode.  However, if certain variables are  slow
+       to  compute,  and  will not change between iterations, you
+       can "preserve" their values  with  the  PPRREESSEERRVVEE  command.
+       Also,  since  function  definitions  are preserved between
+       calendar iterations, there is no need to redefine them  on
+       each   iteration.   Thus,  you  could  use  the  following
+       sequence:
+
+            IF ! defined("initialized")
+                 set initialized 1
+                 set me shell("whoami")
+                 set hostname shell("hostname")
+                 fset func(x) complex_expr
+                 preserve initialized me hostname
+            ENDIF
+
+       The operation is  as  follows:   On  the  first  iteration
+       through  the  script, "initialized" is not defined.  Thus,
+       the commands between IIFF and EENNDDIIFF are executed.  The  PPRREE--
+       SSEERRVVEE  command  ensures that the values of initialized, me
+       and hostname are preserved for subsequent iterations.   On
+       the  next  iteration, the commands are skipped, since ini-
+       tialized has remained defined.  Thus, time-consuming oper-
+       ations  which  do  not  depend on the value of ttooddaayy(()) are
+       done only once.
+
+       System variables (those whose names start  with  '$')  are
+       automatically preserved between calendar iterations.
+
+       Note  that  for  efficiency,  RReemmiinndd  caches  the reminder
+       script (and any IINNCCLLUUDDEEd files) in memory when producing a
+       calendar.
+
+       Timed reminders are sorted and placed into the calendar in
+       time order.  These are followed  by  non-timed  reminders.
+       RReemmiinndd automatically places the time of timed reminders in
+       the calendar according  to  the  --bb  command-line  option.
+       Reminders  in calendar mode are sorted as if the --gg option
+       had been used; you can change the sort order  in  calendar
+
+
+
+                         13 October 1993                       49
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+       mode  by  explicitly using the --gg option to specify a dif-
+       ferent order from the default.
+
+       RREEPPEEAATTEEDD EEXXEECCUUTTIIOONN
+
+       If you supply a _r_e_p_e_a_t parameter on the command line,  and
+       do not use the --cc, --pp, or --ss options, RReemmiinndd operates in a
+       similar manner to calendar mode.  It  repeatedly  executes
+       the reminder script, incrementing ttooddaayy(()) with each itera-
+       tion.  The same rules about preserving variables and func-
+       tion  definitions  apply.   Note  that using _r_e_p_e_a_t on the
+       command line also enables the --qq option and  disables  any
+       --zz  option.   As an example, if you want to see how RReemmiinndd
+       will behave for the next week, you can type:
+
+            remind .reminders '*7'
+
+       If you want to print the dates of the next 1000 days, use:
+
+            (echo 'banner %'; echo 'msg [today()]%') | remind - '*1000'
+
+
+IINNIITTIIAALLIIZZIINNGG VVAARRIIAABBLLEESS OONN TTHHEE CCOOMMMMAANNDD LLIINNEE
+       The  --ii  option  is  used  to  initialize variables on the
+       RReemmiinndd command line.  The format is --ii_v_a_r==_e_x_p_r, where _e_x_p_r
+       is  any  valid  expression.  Note that you may have to use
+       quotes or escapes to prevent the shell  from  interpreting
+       special  characters  in  _e_x_p_r.   You  can  have as many --ii
+       options as you want on the command line, and they are pro-
+       cessed in order.  Thus, if a variable is defined in one --ii
+       option, it can be referred to by subsequent --ii options.
+
+       Note that if you supply a date on the command line, it  is
+       not  parsed  until all options have been processed.  Thus,
+       if you use ttooddaayy(()) in any of the --ii expressions,  it  will
+       return the same value as rreeaallttooddaayy(()) and not the date sup-
+       plied on the command line.
+
+       Any variables defined on the command line are pprreesseerrvveedd as
+       with the PPRREESSEERRVVEE command.
+
+       You  should  not have any spaces between the --ii option and
+       the equal sign; otherwise, strange variable names are cre-
+       ated  which  can  only  be  accessed  with  the vvaalluuee(()) or
+       ddeeffiinneedd(()) functions.
+
+       If your site uses the  RReemmiinndd--aallll  shell  script  to  mail
+       reminders  to  users, the script will initialize the vari-
+       able _r_e_m_i_n_d___a_l_l to 1 using the --ii option.  Thus,  you  can
+       detect  when  your  reminder  script is being processed by
+       RReemmiinndd--aallll and can use this information to  control  which
+       reminders you want mailed to you.
+
+
+
+
+
+                         13 October 1993                       50
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+MMOORREE AABBOOUUTT PPOOSSTTSSCCRRIIPPTT
+       The  PPSS and PPSSFFIILLEE reminders pass PostScript code directly
+       to the printer.  They differ in that the PPSS-type  reminder
+       passes  its  body directly to the PostScript output (after
+       processing by the substitution filter) while  the  PPSSFFIILLEE-
+       type's  body  should  simply  consist  of a filename.  The
+       RReemm22ppss program will open the file named in the PPSSFFIILLEE-type
+       reminder,  and include its contents in the PostScript out-
+       put.
+
+       The PostScript-type reminders for  a  particular  day  are
+       included  in the PostScript output in sorted order of pri-
+       ority.  Note that the order of PostScript commands  has  a
+       _m_a_j_o_r  impact  on  the  appearance  of the calendars.  For
+       example, PostScript code to  shade  a  calendar  box  will
+       obliterate  code  to draw a moon symbol if the moon symbol
+       code is placed in the calendar first.   For  this  reason,
+       you  should  not  provide PPSS or PPSSFFIILLEE-type reminders with
+       priorities; instead, you should ensure that they appear in
+       the reminder script in the correct order.  PostScript code
+       should draw objects working from  the  background  to  the
+       foreground,  so  that  foreground objects properly overlay
+       background ones.  If you prioritize  these  reminders  and
+       run the script using descending sort order for priorities,
+       the PostScript output will not work.
+
+       All of the  PostScript  code  for  a  particular  date  is
+       enclosed  in  a  ssaavvee-rreessttoorree  pair.   However, if several
+       PostScript-type reminders are triggered for a single  day,
+       each  section  of  PostScript  is  not enclosed in a ssaavvee-
+       rreessttoorree pair  -  instead,  the  entire  body  of  included
+       PostScript is enclosed.
+
+       PostScript-type  reminders  are executed by the PostScript
+       printer before any regular calendar entries.  Thus,  regu-
+       lar  calendar  entries  will  overlay  the PostScript-type
+       reminders, allowing you  to  create  shaded  or  graphical
+       backgrounds for particular days.
+
+       Before  executing  your PostScript code, the origin of the
+       PostScript coordinate system is positioned to  the  bottom
+       left-hand corner of the "box" in the calendar representing
+       ttooddaayy(()).  This location is exactly in the  middle  of  the
+       intersection  of the bottom and left black lines delineat-
+       ing the box - you may have to account for the thickness of
+       these lines when calculating positions.
+
+       Several   PostScript   variables   are  available  to  the
+       PostScript code you supply.  All distance and  size  vari-
+       ables  are in PostScript units (1/72 inch.)  The variables
+       are:
+
+       LineWidth
+              The width of the black grid  lines  making  up  the
+
+
+
+                         13 October 1993                       51
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+              calendar.
+
+       Border The border between the center of the grid lines and
+              the space used to  print  calendar  entries.   This
+              border is normally blank space.
+
+       BoxWidth and BoxHeight
+              The width and height of the calendar box, from cen-
+              ter-to-center of the black gridlines.
+
+       InBoxHeight
+              The height from the  center  of  the  bottom  black
+              gridline  to  the top of the regular calendar entry
+              area.  The space from here to the top of the box is
+              used only to draw the day number.
+
+       /DayFont, /EntryFont, /SmallFont, /TitleFont and /HeadFont
+              The fonts used to draw the day numbers, the  calen-
+              dar  entries,  the  small  calendars,  the calendar
+              title (month, year) and the  day-of-the-week  head-
+              ings, respectively.
+
+       DaySize, EntrySize, TitleSize and HeadSize
+              The  sizes  of  the  above fonts.  (The size of the
+              small calendar font  is  _n_o_t  defined  here.)   For
+              example,  if  you  wanted  to print the Hebrew date
+              next to the regular day  number  in  the  calendar,
+              use:
+
+            REM PS Border BoxHeight Border sub DaySize sub moveto \
+               /DayFont findfont DaySize scalefont setfont \
+               ([hebday(today())] [hebmon(today())]) show
+
+              Note how /DayFont and DaySize are used.
+
+       Note that if you supply PostScript code, it is possible to
+       produce  invalid  PostScript  files.   Always  test   your
+       PostScript  thoroughly  with  a  PostScript  viewer before
+       sending it to the printer.  You should not use  any  docu-
+       ment structuring comments in your PostScript code.
+
+
+DDAAEEMMOONN MMOODDEE
+       If  you use the --zz command-line option, RReemmiinndd runs in the
+       "daemon" mode.  In this mode, no  "normal"  reminders  are
+       issued.   Instead,  only timed reminders are collected and
+       queued, and are then  issued  whenever  they  reach  their
+       trigger time.
+
+       In  addition,  RReemmiinndd  wakes up every few minutes to check
+       the modification date on the reminder script (the filename
+       supplied on the command line.)  If RReemmiinndd detects that the
+       script has changed, it re-executes itself in daemon  mode,
+       and interprets the changed script.
+
+
+
+                         13 October 1993                       52
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+       In  daemon  mode,  RReemmiinndd  also re-reads the remind script
+       when it detects that the system date has changed.
+
+       In daemon mode, RReemmiinndd acts as if the --ff option  had  been
+       used, so to run in the daemon mode in the background, use:
+
+            remind -z .reminders &
+
+       If you use sshh or bbaasshh, you may have  to  use  the  "nohup"
+       command  to  ensure that the daemon is not killed when you
+       log out.
+
+
+SSOORRTTIINNGG RREEMMIINNDDEERRSS
+       The --gg option causes RReemmiinndd to sort reminders  by  trigger
+       date,  time  and  priority before issuing them.  Note that
+       reminders are still calculated in the order encountered in
+       the  script.   However,  rather  than being issued immedi-
+       ately, they are saved in an internal buffer.  When  RReemmiinndd
+       has  finished  processing  the script, it issues the saved
+       reminders in sorted order.  The --gg option can be  followed
+       by  up to three characters, which must be "a" or "d".  The
+       first character specifies the sort order by  trigger  date
+       (ascending  or  descending), the second specifies the sort
+       order by trigger time and the  third  specifies  the  sort
+       order  by  priority.  The default is to sort all fields in
+       ascending order.
+
+       In ascending order, reminders are  issued  with  the  most
+       imminent   first.    Descending   order  is  the  reverse.
+       Reminders are always sorted by trigger date, and reminders
+       with  the  same  trigger  date  are then sorted by trigger
+       time.  Non-timed reminders are always issued  after  timed
+       reminders  in  this  mode.  If two reminders have the same
+       date and time, then the priority is used  to  break  ties.
+       Reminders with the same date, time and priority are issued
+       in the order they were encountered.
+
+       You can define a user-defined function  called  SORTBANNER
+       which  takes  one  DDAATTEE-type  argument.  In sort mode, the
+       following sequence happens:
+
+       If RReemmiinndd notices that the next reminder to  issue  has  a
+       different  trigger date from the previous one (or if it is
+       the first one to be issued),  then  SORTBANNER  is  called
+       with  the  trigger  date  as  its argument.  The result is
+       coerced to a string, and passed through  the  substitution
+       filter  with  the appropriate trigger date.  The result is
+       then displayed.
+
+       Here's an example - consider the following fragment:
+
+            # Switch off the normal banner
+            BANNER %
+
+
+
+                         13 October 1993                       53
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+            REM 11 March 1993 ++1 MSG Not so important
+            REM 17 March 1993 ++7 MSG Way in the future
+            REM 10 March 1993 MSG Important Reminder
+            REM 11 March 1993 ++1 MSG Not so important - B
+            FSET sortbanner(x) iif(x == today(), \
+                 "***** THINGS TO DO TODAY *****", \
+                 "----- Things to do %b -----")
+
+       Running this with the --ggaaaa option on 10  March  1993  pro-
+       duces the following output:
+
+            ***** THINGS TO DO TODAY *****
+
+            Important Reminder
+
+            ----- Things to do tomorrow -----
+
+            Not so important
+
+            Not so important - B
+
+            ----- Things to do in 7 days' time -----
+
+            Way in the future
+
+       You  can  use  the  aarrggss(())  built-in function to determine
+       whether or not SORTBANNER has been defined.   (This  could
+       be  used, for example, to provide a default definition for
+       SORTBANNER in a system-wide file included at  the  end  of
+       the user's file.)  Here's an example:
+
+            # Create a default sortbanner function if it hasn't already
+            # been defined
+            if args("sortbanner") != 1
+                 fset sortbanner(x) "--- Things to do %b ---"
+            endif
+
+
+MMSSGGPPRREEFFIIXX(()) AANNDD MMSSGGSSUUFFFFIIXX(())
+       You can define two functions in your script called mmssggpprree--
+       ffiixx(()) and mmssggssuuffffiixx(()).  They should each accept one  argu-
+       ment, a number from 0 to 9999.
+
+       In  normal mode, for MMSSGG- and MMSSFF-type reminders, the fol-
+       lowing sequence occurs when RReemmiinndd triggers a reminder:
+
+       o      If mmssggpprreeffiixx(()) is defined, it is evaluated with the
+              priority  of  the  reminder  as  its argument.  The
+              result is printed.  It is _n_o_t  passed  through  the
+              substitution filter.
+
+       o      The body of the reminder is printed.
+
+       o      If mmssggssuuffffiixx(()) is defined, it is evaluated with the
+
+
+
+                         13 October 1993                       54
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+              priority of the  reminder  as  its  argument.   The
+              result  is  printed.   It is _n_o_t passed through the
+              substitution filter.
+
+       Here's an example:  The following definition causes prior-
+       ity-0  reminders  to  be  preceded by "URGENT", and prior-
+       ity-6000 reminders to be preceded by "(not important)".
+
+            fset msgprefix(x) iif(x==0, "URGENT: ", \
+                 x==6000, "(not important) ", "")
+
+       In Calendar Mode (with the  --cc,  --ss  or  --pp  options),  an
+       analagous  pair of functions named ccaallpprreeffiixx(()) and ccaallssuuff--
+       ffiixx(()) can be defined.  They work with all reminders  which
+       produce  an entry in the calendar (i.e., CCAALL- and possibly
+       RRUUNN-type reminders as well as MMSSGG-type reminders.)
+
+       NNOOTTEESS
+
+       Normally, the body of a reminder is followed by a carriage
+       return.   Thus,  the results of mmssggssuuffffiixx(()) will appear on
+       the next line.  If you don't want this, end  the  body  of
+       the  reminder  with a percentage sign, "%".  If you want a
+       space between your reminders, simply  include  a  carriage
+       return (cchhaarr((1133))) as part of the mmssggssuuffffiixx(()) return value.
+
+       If RReemmiinndd has problems evaluating mmssggpprreeffiixx(()), mmssggssuuffffiixx(())
+       or  ssoorrttbbaannnneerr(()),  you  will  see a lot of error messages.
+       For an example of this, define the following:
+
+            fset msgprefix(x) x/0
+
+
+FFOORREEIIGGNN LLAANNGGUUAAGGEE SSUUPPPPOORRTT
+       Your version of RReemmiinndd may have been compiled to support a
+       language  other than English.  This support may or may not
+       be complete - for example, all error  and  usage  messages
+       may  still be in English.  However, at a minimum, foreign-
+       language versions of RReemmiinndd will output  names  of  months
+       and weekdays in the foreign language.  Also, the substitu-
+       tion mechanism will substitute constructs suitable for the
+       foreign language rather than for English.
+
+       A  foreign-language  version  of RReemmiinndd will accept either
+       the English or  foreign-language  names  of  weekdays  and
+       months  in  a reminder script.  However, for compatibility
+       between versions  of  RReemmiinndd,  you  should  use  only  the
+       English names in your scripts.
+
+
+TTHHEE HHEEBBRREEWW CCAALLEENNDDAARR
+       RReemmiinndd  has  support  for  the Hebrew calendar, which is a
+       luni-solar calendar.  This allows you to create  reminders
+       for  Jewish  holidays, jahrzeits (anniversaries of deaths)
+
+
+
+                         13 October 1993                       55
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+       and smachot (joyous occasions.)
+
+       TTHHEE HHEEBBRREEWW YYEEAARR
+
+       The Hebrew year has 12 months, alternately 30 and 29  days
+       long.   The  months  are: Tishrey, Heshvan, Kislev, Tevet,
+       Shvat, Adar, Nisan, Iyar, Sivan, Tamuz, Av and  Elul.   In
+       Biblical  times,  the  year  started  in  Nisan,  but Rosh
+       Hashana (Jewish New Year) is now celebrated on the 1st and
+       2nd of Tishrey.
+
+       In  a  cycle  of  19  years, there are 7 leap years, being
+       years 3, 6, 8, 11, 14, 17 and 19 of the cycle.  In a  leap
+       year, an extra month of 30 days is added before Adar.  The
+       two Adars are called Adar A and Adar B.
+
+       For certain religious reasons, the year cannot start on  a
+       Sunday, Wednesday or Friday.  To adjust for this, a day is
+       taken off Kislev or added to  Heshvan.   Thus,  a  regular
+       year  can  have from 353 to 355 days, and a leap year from
+       383 to 385.
+
+       When Kislev or Heshvan is short, it is called "chaser", or
+       lacking.  When it is long, it is called "shalem", or full.
+
+       The Jewish date changes at sunset.  However,  RReemmiinndd  will
+       change the date at midnight, not sunset.  So in the period
+       between sunset and midnight, Remind will be a day  earlier
+       than  the  true Jewish date.  This should not be much of a
+       problem in practice.
+
+       The computations for the Jewish calendar were based on the
+       program  "hdate" written by Amos Shapir of the Hebrew Uni-
+       versity of Jerusalem, Israel.  He also supplied  the  pre-
+       ceding explanation of the calendar.
+
+       HHEEBBRREEWW DDAATTEE FFUUNNCCTTIIOONNSS
+
+       hheebbddaayy((dd__ddaattee))
+              Returns  the  day of the Hebrew month corresponding
+              to the _d_a_t_e parameter.  For example, 12 April  1993
+              corresponds   to   21   Nisan   5753.   Thus,  heb-
+              day('1993/04/12') returns 21.
+
+       hheebbmmoonn((dd__ddaattee))
+              Returns the name of the Hebrew month  corresponding
+              to _d_a_t_e.  For example, hebmon('1993/04/12') returns
+              "Nisan".
+
+       hheebbyyeeaarr((dd__ddaattee))
+              Returns the Hebrew year corresponding to _d_a_t_e.  For
+              example, hebyear('1993/04/12') returns 5753.
+
+
+
+
+
+                         13 October 1993                       56
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+       hheebbddaattee((ii__ddaayy,, ss__hheebbmmoonn [[,,iidd__yyrrssttaarrtt [[,,ii__jjaahhrr
+              [[,,ii__aaffllaagg]]]]]]))
+              The hheebbddaattee(()) function is the most complex  of  the
+              Hebrew  support functions.  It can take from 2 to 5
+              arguments.  It returns a DDAATTEE corresponding to  the
+              Hebrew date.
+
+              The _d_a_y parameter can range from 1 to 30, and spec-
+              ifies the day of  the  Hebrew  month.   The  _h_e_b_m_o_n
+              parameter  is  a  string which must name one of the
+              Hebrew months specified above.  Note that the month
+              must  be  spelled  out in full, and use the English
+              transliteration shown  previously.   You  can  also
+              specify "Adar A" and "Adar B."  Month names are not
+              case-sensitive.
+
+              The _y_r_s_t_a_r_t parameter can either be a  DDAATTEE  or  an
+              IINNTT.  If it is a DDAATTEE, then the hheebbddaattee(()) scans for
+              the first Hebrew date on or after that  date.   For
+              example:
+
+                        hebdate(15, "Nisan", '1990/01/01')
+
+              returns  1990/03/30,  because  that  is  the  first
+              occurrence of 15 Nisan on or after 1 January  1990.
+
+              If _y_r_s_t_a_r_t is an IINNTT, it is interpreted as a Hebrew
+              year.  Thus:
+
+                        hebdate(22, "Kislev", 5756)
+
+              returns 1995/12/15, because that  date  corresponds
+              to  22  Kislev, 5756.  Note that none of the Hebrew
+              date  functions  will  work  with   dates   outside
+              RReemmiinndd''ss normal range for dates.
+
+              If _y_r_s_t_a_r_t is not supplied, it defaults to ttooddaayy(()).
+
+              The _j_a_h_r modifies the  behaviour  of  hheebbddaattee(())  as
+              follows:
+
+              If  _j_a_h_r  is  0 (the default), then hheebbddaattee(()) keeps
+              scanning until it finds a date which exactly satis-
+              fies the other parameters.  For example:
+
+                        hebdate(30, "Adar A", 1993/01/01)
+
+              returns  1995/03/02,  corresponding  to  30 Adar A,
+              5755, because that is the  next  occurrence  of  30
+              Adar  A  after  1 January, 1993.  This behaviour is
+              appropriate for Purim Katan, which only appears  in
+              leap years.
+
+              If _j_a_h_r is 1, then the date is modified as follows:
+
+
+
+                         13 October 1993                       57
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+              o      30 Heshvan is converted to 1 Kislev in years
+                     when Heshvan is chaser
+
+              o      30  Kislev  is converted to 1 Tevet in years
+                     when Kislev is chaser
+
+              o      30 Adar A is converted to 1  Nisan  in  non-
+                     leapyears
+
+              o      Other  dates in Adar A are moved to the cor-
+                     responding day in Adar in non-leapyears
+
+              This behaviour is appropriate for  smachot  (joyous
+              occasions)   and   for   some   jahrzeits   -   see
+              "JAHRZEITS."
+
+              if _j_a_h_r is 2, then the date is modified as follows:
+
+              o      30 Kislev and 30 Heshvan are converted to 29
+                     Kislev and 29 Heshvan, respectively, if  the
+                     month is chaser
+
+              o      30  Adar  A is converted to 30 Shvat in non-
+                     leapyears
+
+              o      Other dates in Adar A are moved to the  cor-
+                     responding day in Adar in non-leapyears
+
+              if  _j_a_h_r  is not 0, 1, or 2, it is interpreted as a
+              Hebrew year, and the  behaviour  is  calculated  as
+              described in the next section, "JAHRZEITS."
+
+              The  _a_f_l_a_g  parameter modifies the behaviour of the
+              function for dates in Adar during leap years.   The
+              _a_f_l_a_g is _o_n_l_y used if _y_r_s_t_a_r_t is a DDAATTEE type (or is
+              omitted, defaulting to ttooddaayy(()).)
+
+              The _a_f_l_a_g only affects date calculations if  _h_e_b_m_o_n
+              is specified as "Adar".  In leap years, the follow-
+              ing algorithm is followed:
+
+              o      If _a_f_l_a_g is 0, then the date is triggered in
+                     Adar B.  This is the default.
+
+              o      If _a_f_l_a_g is 1, then the date is triggered in
+                     Adar  A.   This  may  be   appropriate   for
+                     jahrzeits  in  the Ashkenazi tradition; con-
+                     sult a rabbi.
+
+              o      If _a_f_l_a_g is 2, then the date is triggered in
+                     both Adar A and Adar B of a leap year.  Some
+                     Ashkenazim perform jahrzeit in both  Adar  A
+                     and Adar B.
+
+
+
+
+                         13 October 1993                       58
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+       JJAAHHRRZZEEIITTSS
+
+       A  jahrzeit  is a yearly commemoration of someone's death.
+       It normally takes place on the anniversary of  the  death,
+       but may be delayed if burial is delayed - consult a rabbi.
+
+       In addition, because some months change length, it is  not
+       obvious which day the anniversary of a death is.  The fol-
+       lowing rules are used:
+
+       o      If the death occurred on 30 Heshvan, and Heshvan in
+              the  year  after  the  death  is  chaser,  then the
+              jahrzeit is observed on 29 Heshvan  in  years  when
+              Heshvan  is  chaser.   Otherwise,  the  yahrzeit is
+              observed on 1 Kislev when Heshvan is chaser.
+
+       o      If the death occurred on 30 Kislev, and  Kislev  in
+              the  year  after  the  death  is  chaser,  then the
+              jahrzeit is observed on 29  Kislev  in  years  when
+              Kislev  is  chaser.   Otherwise,  the  yahrzeit  is
+              observed on 1 Tevet when Kislev is chaser.
+
+       o      If the  death  occurred  on  1-29  Adar  A,  it  is
+              observed on 1-29 Adar in non-leapyears.
+
+       o      If  the death occurred on 30 Adar A, it is observed
+              on 30 Shvat in a non-leapyear.
+
+       Specifying a Hebrew year for the _j_a_h_r parameter causes the
+       correct behaviour to be selected for a death in that year.
+       You may also have to specify _a_f_l_a_g, depending on your tra-
+       dition.
+
+       The jahrzeit information was supplied by Frank Yellin, who
+       quoted  "The  Comprehensive  Hebrew  Calendar"  by  Arthur
+       Spier,  and  "Calendrical  Calculations" by E. M. Reingold
+       and Nachum Dershowitz.
+
+
+MMIISSCCEELLLLAANNEEOOUUSS
+       CCOOMMMMAANNDD AABBBBRREEVVIIAATTIIOONNSS
+
+       The following tokens can be abbreviated:
+
+       o      RREEMM can be omitted - it  is  implied  if  no  other
+              valid command is present.
+
+       o      CCLLEEAARR--OOMMIITT--CCOONNTTEEXXTT --> CCLLEEAARR
+
+       o      PPUUSSHH--OOMMIITT--CCOONNTTEEXXTT --> PPUUSSHH
+
+       o      PPOOPP--OOMMIITT--CCOONNTTEEXXTT --> PPOOPP
+
+       o      DDUUMMPPVVAARRSS --> DDUUMMPP
+
+
+
+                         13 October 1993                       59
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+       o      BBAANNNNEERR --> BBAANN
+
+       o      IINNCCLLUUDDEE --> IINNCC
+
+       o      SSCCAANNFFRROOMM --> SSCCAANN
+
+       NNIIFFTTYY EEXXAAMMPPLLEESS
+
+       This section is a sampling of what you can do with RReemmiinndd.
+
+            REM 5 Feb 1991 AT 14:00 +45 *30 \
+            RUN mail -s "Meeting at %2" $LOGNAME </dev/null &
+
+       On 5 February, 1991, this reminder will mail you reminders
+       of  a  2:00pm meeting at 1:15, 1:45 and 2:00.  The subject
+       of the mail message will be "Meeting at  2:00pm"  and  the
+       body of the message will be blank.
+
+            REM AT 17:00 RUN echo "5:00pm - GO HOME!" | xless -g +0+0 &
+
+       This  reminder will pop up an xless window at 5:00pm every
+       day.  The xless window will contain the line "5:00pm -  GO
+       HOME!"
+
+            REM AT 23:59 RUN (sleep 120; remind -a [filename()]) &
+
+       This reminder will run at one minute to midnight.  It will
+       cause a new RReemmiinndd process to start  at  one  minute  past
+       midnight.   This  allows you to have a continuous reminder
+       service so you can work through the night  and  still  get
+       timed  reminders for early in the morning.  Note that this
+       trick is no longer necessary, providing you run RReemmiinndd  in
+       daemon mode.
+
+            remind -c12 /dev/null Jan 1993
+
+       This  invocation of RReemmiinndd will cause it to print a calen-
+       dar for 1993, with all entries left blank.
+
+            REM CAL [trigdate()-date(year(trigdate()), 1, 1)+1]
+
+       This example puts an entry in each box of a calendar show-
+       ing the number (1-365 or 366) of the day of the year.
+
+            REM Tue 2 Nov SATISFY (year(trigdate())%4) == 0
+            IF trigvalid()
+                 REM [trigger(trigdate())] ++5 MSG \
+                 U.S. Presidential Election!!
+            ENDIF
+
+       This example warns you 5 days ahead of each American pres-
+       idential election.  The first RREEMM command  calculates  the
+       first  Tuesday  after the first Monday in November.  (This
+       is  equivalent  to  the  first  Tuesday  on  or  after   2
+
+
+
+                         13 October 1993                       60
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+       November.)   The  SSAATTIISSFFYY  clause ensures that the trigger
+       date is issued only in election years, which are multiples
+       of   4.   The  second  RREEMM  command  actually  issues  the
+       reminder.
+
+       DDEETTAAIILLSS AABBOOUUTT TTRRIIGGGGEERR CCOOMMPPUUTTAATTIIOONN
+
+       Here is a _c_o_n_c_e_p_t_u_a_l description of how triggers are  cal-
+       culated.  Note that RReemmiinndd actually uses a much more effi-
+       cient procedure, but the results are the same  as  if  the
+       conceptual procedure had been followed.
+
+       RReemmiinndd starts from the current date (that is, the value of
+       ttooddaayy(())) and scans forward, examining each day  one  at  a
+       time until it finds a date which satisfies the trigger, or
+       can prove that no such dates (on or  later  than  ttooddaayy(()))
+       exist.
+
+       If  RReemmiinndd is executing a SSAATTIISSFFYY-type reminder, it evalu-
+       ates the expression with ttrriiggddaattee(()) set to the date  found
+       above.   If  the  expression evaluates to zero or the null
+       string, RReemmiinndd continues the scanning procedure  described
+       above,  starting  with  the  day  after  the trigger found
+       above.
+
+       The SSCCAANNFFRROOMM clause (having a syntax similar to UUNNTTIILL) can
+       modify  the  search  strategy  used.  In this case, RReemmiinndd
+       begins the scanning procedure at _s_c_a_n___d_a_t_e, which  is  the
+       date specified in the SSCCAANNFFRROOMM clause.  For example:
+
+            REM Mon 1 SCANFROM 17 Jan 1992 MSG Foo
+
+       The  example above will always have a trigger date of Mon-
+       day, 3 February 1992.  That is because RReemmiinndd starts scan-
+       ning  from  17 January 1992, and stops scanning as soon as
+       it hits a date which satisfies "Mon 1."
+
+       The main use of SSCCAANNFFRROOMM is in situations where  you  want
+       to calculate the positions of floating holidays.  Consider
+       the Labour Day example shown much earlier.  Labour Day  is
+       the  first  Monday in September.  It can move over a range
+       of 7 days.  Consider the following sequence:
+
+            REM Mon 1 Sept SCANFROM [trigger(today()-7)] SATISFY 1
+            OMIT [trigger(trigdate())]
+
+            REM Mon AFTER MSG Hello
+
+       The SSCCAANNFFRROOMM clause makes sure that RReemmiinndd begins scanning
+       from  7  days  before the current date.  This ensures that
+       Labour Day for the current year will continue to be  trig-
+       gered until 7 days after it has occurred.  This allows you
+       to safely use the AFTER keyword as shown.
+
+
+
+
+                         13 October 1993                       61
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+       In general, use SSCCAANNFFRROOMM as shown for safe movable  OOMMIITTss.
+       The  amount you should scan back by (7 days in the example
+       above) depends on the number of possible consecutive OOMMIITT--
+       tteedd  days which may occur, and on the range of the movable
+       holiday.  Generally, a value of 7 is safe.
+
+       Note that if you use one RREEMM command to calculate a  trig-
+       ger  date, perform date calculations (addition or subtrac-
+       tion, for example) and then use the  modified  date  in  a
+       subsequent  RREEMM  command,  the results _m_a_y _n_o_t _b_e _w_h_a_t _y_o_u
+       _i_n_t_e_n_d_e_d_.  This is because you have circumvented the  nor-
+       mal  scanning mechanism.  You should try to write RREEMM com-
+       mands which compute trigger dates that can be used unmodi-
+       fied  in  subsequent  RREEMM  commands.   The file "defs.rem"
+       which comes with the RReemmiinndd  distribution  contains  exam-
+       ples.
+
+       DDEETTAAIILLSS AABBOOUUTT TTRRIIGGVVAALLIIDD(())
+
+       The  ttrriiggvvaalliidd(()) function returns 1 if RReemmiinndd could find a
+       trigger date for the previous RREEMM or IIFFTTRRIIGG command.  More
+       specifically,  it  returns  1  if  RReemmiinndd finds a date _n_o_t
+       _b_e_f_o_r_e _t_h_e _s_t_a_r_t_i_n_g _d_a_t_e _o_f _t_h_e _s_c_a_n_n_i_n_g  which  satisfies
+       the  trigger.   In  addition, there is one special case in
+       which ttrriiggvvaalliidd(()) returns 1 and ttrriiggddaattee(()) returns a mean-
+       ingful result:
+
+       If  the  RREEMM  or  IIFFTTRRIIGG  command did not contain an UUNNTTIILL
+       clause, and contained all of the _d_a_y, _m_o_n_t_h and _y_e_a_r  com-
+       ponents,  then  RReemmiinndd  will  correctly  compute a trigger
+       date, even if it happens to be before the start  of  scan-
+       ning.   Note  that this behaviour is not true for versions
+       of RReemmiinndd prior to 03.00.01.
+
+AAUUTTHHOORR
+       David F. Skoll wrote RReemmiinndd.  The  moon  code  was  copied
+       largely  unmodified  from  "moontool" by John Walker.  The
+       Hebrew calendar support was taken  from  "hdate"  by  Amos
+       Shapir.   The  authors of the language files are listed in
+       the header file "lang.h" which comes  with  RReemmiinndd.   OS/2
+       support  was  provided initially by Darrel Hankerson; more
+       complete OS/2 support was done by Russ Herman.
+
+BBUUGGSS
+       There's no good reason why read-only system variables  are
+       not  implemented  as functions, or why functions like vveerr--
+       ssiioonn(()), etc.  are  not  implemented  as  read-only  system
+       variables.
+
+       Hebrew dates change at midnight, not sunset.
+
+       The UTC functions are not reliable under MS-DOS.
+
+       The  MS-DOS  version of RReemmiinndd does not support queuing or
+
+
+
+                         13 October 1993                       62
+
+
+
+
+
+REMIND(1)                                               REMIND(1)
+
+
+       timed activation of reminders.
+
+       RReemmiinndd has some built-in limits on total line length, sub-
+       stitution buffer length, number of global OOMMIITTs, etc.
+
+
+SSEEEE AALLSSOO
+       rem, elm, kall, rem2ps
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                         13 October 1993                       63
+
+
